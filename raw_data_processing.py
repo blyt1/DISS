@@ -150,13 +150,13 @@ def process_hhar_all_files(data_folder_path):
         user_datasets (a list containing data collected from the acc + gyro from both smartphones and watches)
     """
     har_phone_acc = pd.read_csv(os.path.join(data_folder_path, 'Phones_accelerometer.csv'))
-    har_phone_acc['Device'] = "Phone"
+    har_phone_acc['Device'] = "Phone acc"
     har_phone_gyro = pd.read_csv(os.path.join(data_folder_path, 'Phones_gyroscope.csv'))
-    har_phone_gyro['Device'] = "Phone"
+    har_phone_gyro['Device'] = "Phone gyro"
     har_watch_acc = pd.read_csv(os.path.join(data_folder_path, 'Watch_accelerometer.csv'))
-    har_watch_acc['Device'] = "Watch"
+    har_watch_acc['Device'] = "Watch acc"
     har_watch_gyro = pd.read_csv(os.path.join(data_folder_path, 'Watch_gyroscope.csv'))
-    har_watch_gyro['Device'] = "Watch"
+    har_watch_gyro['Device'] = "Watch gyro"
     acc_data = pd.concat([har_phone_acc, har_watch_acc])
     gyro_data = pd.concat([har_phone_gyro, har_watch_gyro])
 
@@ -186,8 +186,20 @@ def process_hhar_all_files(data_folder_path):
         print(f"{user} {data.shape}")
         gyro_datasets[user] = [(data, labels)]
 
+    all_data = {}
+    gyro_acc_data = pd.concat([acc_data, gyro_data])
+    gyro_acc_data.dropna(how="any", inplace=True)
+    for user in har_users:
+        user_extract = gyro_acc_data[gyro_acc_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        # data["data-source"] = "HHAR"
+        labels = user_extract["device"].values
+        print(f"{user} {data.shape}")
+        all_data[user] = [(data, labels)]
+
     user_datasets = {'acc': acc_datasets,
-                     'gyro': gyro_datasets}
+                     'gyro': gyro_datasets, 
+                     'all': all_data}
     return user_datasets
 
 
@@ -204,39 +216,39 @@ def process_PAMAP2_all_data(data_folder_path):
     user_df = pd.concat(combined_data, ignore_index=True)
     hand_acc_data = user_df.loc[:, [4, 5, 6, 1, 'User-ID']]
     hand_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
-    hand_acc_data['device'] = "IMU hand"
+    hand_acc_data['device'] = "IMU hand acc"
 
     hand_gyro_data = user_df.loc[:, [10, 11, 12, 1, 'User-ID']]
     hand_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
-    hand_gyro_data['device'] = 'IMU hand'
+    hand_gyro_data['device'] = 'IMU hand gyro'
 
     hand_mag_data = user_df.loc[:, [13, 14, 15, 1, 'User-ID']]
     hand_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
-    hand_mag_data['device'] = 'IMU hand'
+    hand_mag_data['device'] = 'IMU hand mag'
 
     chest_acc_data = user_df.loc[:, [21, 22, 23, 1, 'User-ID']]
     chest_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
-    chest_acc_data['device'] = "IMU chest"
+    chest_acc_data['device'] = "IMU chest acc"
 
     chest_gyro_data = user_df.loc[:, [27, 28, 29, 1, 'User-ID']]
     chest_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
-    chest_gyro_data['device'] = "IMU chest"
+    chest_gyro_data['device'] = "IMU chest gyro"
 
     chest_mag_data = user_df.loc[:, [30, 31, 32, 1, 'User-ID']]
     chest_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
-    chest_mag_data['device'] = "IMU chest"
+    chest_mag_data['device'] = "IMU chest mag"
 
     ankle_acc_data = user_df.loc[:, [38, 39, 40, 1, 'User-ID']]
     ankle_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
-    ankle_acc_data['device'] = 'IMU ankle'
+    ankle_acc_data['device'] = 'IMU ankle acc'
 
     ankle_gyro_data = user_df.loc[:, [44, 45, 46, 1, 'User-ID']]
     ankle_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
-    ankle_gyro_data['device'] = 'IMU ankle'
+    ankle_gyro_data['device'] = 'IMU ankle gyro'
 
     ankle_mag_data = user_df.loc[:, [47, 48, 49, 1, 'User-ID']]
     ankle_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
-    ankle_mag_data['device'] = 'IMU ankle'
+    ankle_mag_data['device'] = 'IMU ankle mag'
 
     PAMAP_users = user_df['User-ID'].unique()   
 
@@ -272,9 +284,22 @@ def process_PAMAP2_all_data(data_folder_path):
         print(f"{user} {data.shape}")
         pamap_mag_datasets[user] = [(data, labels)]
 
+    pamap_all_data = {}
+    gyro_acc_mag_data = pd.concat([pamap_acc_data, pamap_gyro_data, pamap_mag_data])
+    for user in PAMAP_users:
+        user_extract = gyro_acc_mag_data[gyro_acc_mag_data["user-id"] == user]
+        user_extract = user_extract.dropna()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        # data["data-source"] = "PAMAP"
+        labels = user_extract["device"].values
+        print(f"{user} {data.shape}")
+        pamap_all_data[user] = [(data, labels)]
+
     user_datasets = {'acc': pamap_acc_datasets,
                      'gyro': pamap_gyro_datasets, 
-                     'mag': pamap_mag_datasets}
+                     'mag': pamap_mag_datasets, 
+                     'all': pamap_all_data}
+    
     return user_datasets
 
 
@@ -289,6 +314,7 @@ def concat_datasets(datasets, sensor_type):
 def process_motion_sense_all_files(data_folder_path):
     user_datasets = {}
     all_sensor_folders = sorted(glob.glob(data_folder_path + "/*"))
+    all_data = {}
     for folder in all_sensor_folders:
         print(folder)
         sensor_data = {}
@@ -298,7 +324,7 @@ def process_motion_sense_all_files(data_folder_path):
             trial_name = os.path.split(trial_folder)[-1]
 
             # label of the trial is given in the folder name, separated by underscore
-            label = trial_name.split("_")[0]
+            label = "iphone " + folder[46:49]
             # label_set[label] = True
             print(trial_folder)
 
@@ -318,17 +344,21 @@ def process_motion_sense_all_files(data_folder_path):
                     values = user_trial_dataset[["x", "y", "z"]].values
 
                     # the label is the same during the entire trial, so it is repeated here to pad to the same length as the values
-                    labels = np.repeat("iphone", values.shape[0])
+                    labels = np.repeat(label, values.shape[0])
 
                     if user_id not in sensor_data:
                         sensor_data[user_id] = []
+                    if user_id not in all_data:
+                        all_data[user_id] = []
                     sensor_data[user_id].append((values, labels))
+                    all_data[user_id].append((values, labels))
                 else:
                     print("[ERR] User id not found", trial_user_file)
             if(folder == "test_run/original_datasets/motionsense/Data/B_Accelerometer_data"):
                 user_datasets.update({'acc': sensor_data})
             else:
                 user_datasets.update({'gyro': sensor_data})
+    user_datasets.update({'all': all_data})
            
 
     return user_datasets
