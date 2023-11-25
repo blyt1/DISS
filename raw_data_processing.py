@@ -188,7 +188,8 @@ def process_hhar_all_files(data_folder_path):
 
     all_data = {}
     gyro_acc_data = pd.concat([acc_data, gyro_data])
-    print(gyro_acc_data)
+    gyro_acc_data.dropna(how="any", inplace=True)
+
     for user in har_users:
         user_extract = gyro_acc_data[gyro_acc_data["user-id"] == user]
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
@@ -288,7 +289,7 @@ def process_PAMAP2_all_data(data_folder_path):
     gyro_acc_mag_data = pd.concat([pamap_acc_data, pamap_gyro_data, pamap_mag_data])
     for user in PAMAP_users:
         user_extract = gyro_acc_mag_data[gyro_acc_mag_data["user-id"] == user]
-        # user_extract = user_extract.dropna()
+        user_extract = user_extract.dropna()
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "PAMAP"
         labels = user_extract["device"].values
@@ -359,7 +360,6 @@ def process_motion_sense_all_files(data_folder_path):
             else:
                 user_datasets.update({'gyro': sensor_data})
     user_datasets.update({'all': all_data})
-
     return user_datasets
 
 
