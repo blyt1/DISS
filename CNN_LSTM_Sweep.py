@@ -16,7 +16,7 @@ import self_har_models
 tf.get_logger().setLevel('INFO')
 
 
-wandb.login()
+wandb.login(key='d75a632eee4f2a1869dfe5344e9e2299aca50ebd')
 # get data from pickle 
 with open('pickled_datasets/pamap.pickle', 'rb') as file:
     pamap_df = pickle.load(file)
