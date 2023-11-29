@@ -35,11 +35,13 @@ def train_self_supervised_model(df, core_model, label_size, optimizer):
                                                                           output_shape=label_size, 
                                                                           optimizer=optimizer)
     history = composite_model.fit(df[0][0], df[0][1]
-                    , epochs=2, validation_data=(df[1][0], df[1][1]))
+                    , epochs=100, validation_data=(df[1][0], df[1][1]))
     return history, composite_model
 
 
 def eval_model(df, labels, model):
+    cnn_test_result = model.evaluate(df[2][0],  df[2][1], return_dict=True)
+    print(cnn_test_result)
     predicted_labels = np.argmax(model.predict(df[2][0]), axis=1)
     true_labels = np.argmax(df[2][1], axis=1)
     confusion_mat = tf.math.confusion_matrix(true_labels, predicted_labels)
@@ -49,6 +51,7 @@ def eval_model(df, labels, model):
     plt.ylabel('Actual')
     plt.xlabel('Predicted')
     plt.plot()
+    plt.show()
 
 def downstream_testing(df, model, label_size, optimizer):
     core_model = self_har_models.extract_core_model(model)
@@ -56,7 +59,7 @@ def downstream_testing(df, model, label_size, optimizer):
                                                                           output_shape=label_size, 
                                                                           optimizer=optimizer)
     history = har_model.fit(df[0][0], df[0][1]
-                    , epochs=2, validation_data=(df[1][0], df[1][1]))
+                    , epochs=100, validation_data=(df[1][0], df[1][1]))
     return history, har_model
 
 
@@ -100,7 +103,6 @@ def eval_pamap():
 
     ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 19, tf.keras.optimizers.Adam(learning_rate=0.0001))
     eval_model(har_preprocessed, labels, har_model)
-
 
 if __name__ == '__main__':
     eval_pamap()
