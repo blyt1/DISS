@@ -355,13 +355,110 @@ def process_motion_sense_all_files(data_folder_path):
                     all_data[user_id].append((values, labels))
                 else:
                     print("[ERR] User id not found", trial_user_file)
-            if(folder == "test_run/original_datasets/motionsense/Data/B_Accelerometer_data"):
+            if(folder[46:49] == "acc"):
                 user_datasets.update({'acc': sensor_data})
             else:
                 user_datasets.update({'gyro': sensor_data})
     user_datasets.update({'all': all_data})
     return user_datasets
 
+def process_pamap2_har_files(data_folder_path):
+    combined_data = []
+
+    for filename in os.listdir(data_folder_path):
+        if filename.endswith('.dat'):
+            file_path = os.path.join(data_folder_path, filename)
+            df = pd.read_csv(file_path, sep=' ', header=None, na_filter="NaN")
+            df['User-ID'] = filename[7:10]
+            combined_data.append(df)
+    
+    user_df = pd.concat(combined_data, ignore_index=True)
+    hand_acc_data = user_df.loc[:, [4, 5, 6, 1, 'User-ID']]
+    hand_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    hand_acc_data['device'] = "IMU hand acc"
+
+    hand_gyro_data = user_df.loc[:, [10, 11, 12, 1, 'User-ID']]
+    hand_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    hand_gyro_data['device'] = 'IMU hand gyro'
+
+    hand_mag_data = user_df.loc[:, [13, 14, 15, 1, 'User-ID']]
+    hand_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    hand_mag_data['device'] = 'IMU hand mag'
+
+    chest_acc_data = user_df.loc[:, [21, 22, 23, 1, 'User-ID']]
+    chest_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    chest_acc_data['device'] = "IMU chest acc"
+
+    chest_gyro_data = user_df.loc[:, [27, 28, 29, 1, 'User-ID']]
+    chest_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    chest_gyro_data['device'] = "IMU chest gyro"
+
+    chest_mag_data = user_df.loc[:, [30, 31, 32, 1, 'User-ID']]
+    chest_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    chest_mag_data['device'] = "IMU chest mag"
+
+    ankle_acc_data = user_df.loc[:, [38, 39, 40, 1, 'User-ID']]
+    ankle_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ankle_acc_data['device'] = 'IMU ankle acc'
+
+    ankle_gyro_data = user_df.loc[:, [44, 45, 46, 1, 'User-ID']]
+    ankle_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ankle_gyro_data['device'] = 'IMU ankle gyro'
+
+    ankle_mag_data = user_df.loc[:, [47, 48, 49, 1, 'User-ID']]
+    ankle_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ankle_mag_data['device'] = 'IMU ankle mag'
+    
+    PAMAP_users = user_df['User-ID'].unique()   
+
+    pamap_acc_data = pd.concat([hand_acc_data, chest_acc_data, ankle_acc_data])
+    pamap_acc_datasets = {}
+    for user in PAMAP_users:
+        user_extract = pamap_acc_data[pamap_acc_data["user-id"] == user]
+        # user_extract = user_extract.dropna()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        # data["data-source"] = "PAMAP"
+        labels = user_extract["activity"]
+        print(f"{user} {data.shape}")
+        pamap_acc_datasets[user] = [(data, labels)]
+    pamap_gyro_data = pd.concat([hand_gyro_data, chest_gyro_data, ankle_gyro_data])
+    pamap_gyro_datasets = {}
+    for user in PAMAP_users:
+        user_extract = pamap_gyro_data[pamap_gyro_data["user-id"] == user]
+        # user_extract = user_extract.dropna()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        # data["data-source"] = "PAMAP"
+        labels = user_extract["activity"]
+        print(f"{user} {data.shape}")
+        pamap_gyro_datasets[user] = [(data, labels)]
+
+    pamap_mag_data = pd.concat([hand_mag_data, chest_mag_data, ankle_mag_data])
+    pamap_mag_datasets = {}
+    for user in PAMAP_users:
+        user_extract = pamap_mag_data[pamap_mag_data["user-id"] == user]
+        # user_extract = user_extract.dropna()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        # data["data-source"] = "PAMAP"
+        labels = user_extract["activity"]
+        print(f"{user} {data.shape}")
+        pamap_mag_datasets[user] = [(data, labels)]
+
+    pamap_all_data = {}
+    gyro_acc_mag_data = pd.concat([pamap_acc_data, pamap_gyro_data, pamap_mag_data])
+    for user in PAMAP_users:
+        user_extract = gyro_acc_mag_data[gyro_acc_mag_data["user-id"] == user]
+        user_extract = user_extract.dropna()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        # data["data-source"] = "PAMAP"
+        labels = user_extract["activity"]
+        print(f"{user} {data.shape}")
+        pamap_all_data[user] = [(data, labels)]
+
+    user_datasets = {'acc': pamap_acc_datasets,
+                     'gyro': pamap_gyro_datasets, 
+                     'mag': pamap_mag_datasets, 
+                     'all': pamap_all_data}
+    return user_datasets
 
 
 def store_pickle(dataset, filename):
