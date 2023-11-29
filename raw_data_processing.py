@@ -355,7 +355,7 @@ def process_motion_sense_all_files(data_folder_path):
                     all_data[user_id].append((values, labels))
                 else:
                     print("[ERR] User id not found", trial_user_file)
-            if(folder == "test_run/original_datasets/motionsense/Data/B_Accelerometer_data"):
+            if(folder[46:49] == "acc"):
                 user_datasets.update({'acc': sensor_data})
             else:
                 user_datasets.update({'gyro': sensor_data})
