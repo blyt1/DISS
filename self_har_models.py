@@ -45,6 +45,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
+TODO: add github link
 """
 
 def create_1d_conv_core_model(input_shape, model_name="base_model", use_standard_max_pooling=False):
@@ -271,3 +272,151 @@ def save_model_results(model, x_test, y_test, filename):
     with open(filename, 'a') as file:
         file.write("\nConfusion Matrix:\n")
         np.savetxt(file, cm, fmt='%d')
+
+
+def create_CNN_LSTM_Model(input_shape, model_name="CNN_LSTM"):
+    """
+    Combine the CNN model proposed in SelfHAR with a bidirectional LSTM model
+    @INPROCEEDINGS{9065078,
+    author={Mutegeki, Ronald and Han, Dong Seog},
+    booktitle={2020 International Conference on Artificial Intelligence in Information and Communication (ICAIIC)}, 
+    title={A CNN-LSTM Approach to Human Activity Recognition}, 
+    year={2020},
+    volume={},
+    number={},
+    pages={362-366},
+    doi={10.1109/ICAIIC48513.2020.9065078}
+    }
+
+    Architecture:
+        Input
+        -> Conv 1D: 32 filters, 24 kernel_size, relu, L2 regularizer
+        -> Dropout: 10%
+        -> Conv 1D: 64 filters, 16 kernel_size, relu, L2 regularizer
+        -> Dropout: 10%
+        -> Conv 1D: 96 filters, 8 kernel_size, relu, L2 regularizer
+        -> Dropout: 10%
+        -> Maximum Pooling 1D
+        -> Dropout: 50%
+        -> Bidirectional LSTM: 96x2 units
+        -> Dropout: 40%
+        -> Dense Layer: 100 units
+    Parameters:
+        input_shape
+            the input shape for the model, should be (window_size, num_channels)
+    
+    Returns:
+        model (tf.keras.Model)
+    """
+    inputs = tf.keras.Input(shape=input_shape, name='input')
+    x = inputs
+    x = tf.keras.layers.Dense(300, activation='relu')(x)
+    x = tf.keras.layers.Conv1D(
+            64, 3,
+            activation='relu',
+            strides = 1,
+            kernel_regularizer=tf.keras.regularizers.l2(l=1e-4)
+        )(x)
+    x = tf.keras.layers.Conv1D(
+            128, 3,
+            activation='relu',
+            strides = 1,
+            kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
+        )(x)
+    x = tf.keras.layers.MaxPool1D(pool_size=4, padding='valid', data_format='channels_last', strides=2)(x)
+
+    x = tf.keras.layers.Conv1D(
+        32, 5,
+        activation='relu',
+        strides = 2,
+        kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
+        )(x)
+    x = tf.keras.layers.Conv1D(
+        32, 5,
+        activation='relu',
+        strides = 2,
+        kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
+        )(x)
+    x = tf.keras.layers.MaxPool1D(pool_size=4, padding='valid', data_format='channels_last', strides=2)(x)
+
+    x = tf.keras.layers.Dropout(0.5)(x)
+    x = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(96))(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    # x = tf.keras.layers.Dense(96, activation='relu')(x)
+    outputs = tf.keras.layers.Dense(100, activation='softmax')(x)
+
+    return tf.keras.Model(inputs, outputs, name=model_name)
+
+
+def create_LSTM_Model(input_shape, model_name="LSTM"):
+    inputs = tf.keras.Input(shape=input_shape, name='input')
+    x = inputs    
+    x = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(96))(x)
+    x = tf.keras.layers.Dense(96, activation='relu')(x)
+    outputs = tf.keras.layers.Dense(100, activation='sigmoid')(x)
+
+    return tf.keras.Model(inputs, outputs, name= model_name)
+
+
+def create_LSTM_CNN_Model(input_shape, model_name="LSTM_CNN"):
+    """
+    This model is inspired by Xia, Huang and Wang's LSTM-CNN model from the paper "LSTM-CNN Architecture for Human Activity Recognition" 
+
+    @ARTICLE{9043535,
+    author={Xia, Kun and Huang, Jianguang and Wang, Hanyu},
+    journal={IEEE Access}, 
+    title={LSTM-CNN Architecture for Human Activity Recognition}, 
+    year={2020},
+    volume={8},
+    number={},
+    pages={56855-56866},
+    doi={10.1109/ACCESS.2020.2982225}}
+
+    Architecture:
+        Input
+        -> LSTM
+        -> LSTM
+        -> Conv 1D
+        -> dropout
+        -> Conv 1D
+        -> dropout
+        -> Conv 1D
+        -> dropout
+        -> global max pooling
+
+
+    Parameters:
+        input_shape
+            the input shape for the model, should be (window_size, num_channels)
+    
+    Returns:
+        model (tf.keras.Model)
+    """
+    inputs = tf.keras.Input(shape=input_shape, name='input')
+    x = tf.keras.layers.LSTM(300, return_sequences=True)(x)
+    x = tf.keras.layers.LSTM(300, return_sequences=True)(x)
+    x = tf.keras.layers.Conv1D(
+            32, 24,
+            activation='relu',
+            kernel_regularizer=tf.keras.regularizers.l2(l=1e-4)
+        )(x)
+    x = tf.keras.layers.Dropout(0.1)(x)
+
+    x = tf.keras.layers.Conv1D(
+            64, 16,
+            activation='relu',
+            kernel_regularizer=tf.keras.regularizers.l2(l=1e-4)
+        )(x)
+    x = tf.keras.layers.Dropout(0.1)(x)
+
+    x = tf.keras.layers.Conv1D(
+        96, 8,
+        activation='relu',
+        kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
+        )(x)
+    x = tf.keras.layers.Dropout(0.1)(x)
+    outputs = tf.keras.layers.GlobalMaxPool1D(data_format='channels_last', name='global_max_pooling1d')(x) 
+
+    return tf.keras.Model(inputs, outputs, name= model_name)
+
+
