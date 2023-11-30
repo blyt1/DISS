@@ -35,7 +35,7 @@ def train_self_supervised_model(df, core_model, label_size, optimizer):
                                                                           output_shape=label_size, 
                                                                           optimizer=optimizer)
     history = composite_model.fit(df[0][0], df[0][1]
-                    , epochs=1, validation_data=(df[1][0], df[1][1]))
+                    , epochs=100, validation_data=(df[1][0], df[1][1]))
     return history, composite_model
 
 
@@ -60,7 +60,7 @@ def downstream_testing(df, model, label_size, optimizer):
                                                                           output_shape=label_size, 
                                                                           optimizer=optimizer)
     history = har_model.fit(df[0][0], df[0][1]
-                    , epochs=1, validation_data=(df[1][0], df[1][1]))
+                    , epochs=100, validation_data=(df[1][0], df[1][1]))
     return history, har_model
 
 
@@ -78,7 +78,7 @@ def eval_downstream_model(df, har_df, sensor_type):
         label_map=label_map, 
         output_shape=outputshape,
         train_users=users[0:(user_train_size-1)],
-        test_users=test_users,
+        test_users=users[user_train_size:(user_train_size + user_test_size - 1)],
         window_size=400, 
         shift=200
     )
@@ -88,24 +88,25 @@ def eval_downstream_model(df, har_df, sensor_type):
     eval_model(user_dataset_preprocessed, labels, composite_model)
 
     har_df = dataset_pre_processing.concat_datasets([har_df], sensor_type=sensor_type)
-    outputshape2 = len(set(df[list(har_df.keys())[0]][0][1]))
+    outputshape2 = len(set(har_df[list(har_df.keys())[0]][0][1]))
     har_labels = dataset_pre_processing.get_labels(har_df)
 
     har_label_map = {label: index for index, label in enumerate(har_labels)}
 
-    for i in range(user_train_size, 3, -1):
+    for i in range(3, 5):
         har_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
         user_datasets=har_df,
         label_map=har_label_map,
         output_shape=outputshape2,
         train_users=users[0:i],
-        test_users=test_users,
+        test_users=users[7],
         window_size=400,
         shift=200
         )
-        ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 19, 
+        ds_history, har_model = downstream_testing(har_preprocessed, composite_model, outputshape2, 
                                                tf.keras.optimizers.Adam(learning_rate=0.0005))
-        downstream_eval = eval_model(har_preprocessed, labels, har_model)
+        downstream_eval = eval_model(har_preprocessed, har_labels, har_model)
+        print("Trained " + str(i) + " users")
         print(downstream_eval)
     
 
