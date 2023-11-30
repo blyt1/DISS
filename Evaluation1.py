@@ -123,5 +123,6 @@ if __name__ == '__main__':
         pamap_df = pickle.load(file)
     with open('pickled_datasets/pamap_har.pickle', 'rb') as file:
         pamap_har_df = pickle.load(file)
+    print(pamap_df)
     eval_downstream_model(pamap_df, pamap_har_df, 'acc')
     pass
