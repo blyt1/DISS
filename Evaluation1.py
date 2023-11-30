@@ -79,8 +79,8 @@ def eval_downstream_model(df, har_df, sensor_type):
         user_datasets=df, 
         label_map=label_map, 
         output_shape=outputshape,
-        train_users=users[0:(user_train_size-1)],
-        test_users=users[user_train_size:(user_train_size + user_test_size - 1)],
+        train_users=users[0:(user_train_size)],
+        test_users=users[user_train_size:(user_train_size + user_test_size)],
         window_size=400, 
         shift=200
     )
