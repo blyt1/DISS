@@ -96,13 +96,13 @@ def eval_downstream_model(df, har_df, sensor_type):
 
     har_label_map = {label: index for index, label in enumerate(har_labels)}
 
-    for i in range(3, 5):
+    for i in range(3, user_test_size):
         har_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
         user_datasets=har_df,
         label_map=har_label_map,
         output_shape=outputshape2,
         train_users=users[0:i],
-        test_users=users[7],
+        test_users=users[user_train_size:(user_train_size + user_test_size)],
         window_size=400,
         shift=200
         )
@@ -116,7 +116,7 @@ def eval_downstream_model(df, har_df, sensor_type):
 def eval_hhar():
     with open('pickled_datasets/hhar2.pickle', 'rb') as file:
         hhar_df = pickle.load(file)
-    hhar_df = dataset_pre_processing.concat_datasets([hhar_df], sensor_type='all')
+    hhar_df = dataset_pre_processing.concat_datasets([hhar_df], sensor_type='acc')
 
 
     pass
