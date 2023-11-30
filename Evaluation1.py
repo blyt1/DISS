@@ -35,7 +35,7 @@ def train_self_supervised_model(df, core_model, label_size, optimizer):
                                                                           output_shape=label_size, 
                                                                           optimizer=optimizer)
     history = composite_model.fit(df[0][0], df[0][1]
-                    , epochs=100, validation_data=(df[1][0], df[1][1]))
+                    , epochs=1, validation_data=(df[1][0], df[1][1]))
     return history, composite_model
 
 
@@ -60,7 +60,7 @@ def downstream_testing(df, model, label_size, optimizer):
                                                                           output_shape=label_size, 
                                                                           optimizer=optimizer)
     history = har_model.fit(df[0][0], df[0][1]
-                    , epochs=100, validation_data=(df[1][0], df[1][1]))
+                    , epochs=1, validation_data=(df[1][0], df[1][1]))
     return history, har_model
 
 
