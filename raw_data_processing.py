@@ -460,6 +460,69 @@ def process_pamap2_har_files(data_folder_path):
                      'all': pamap_all_data}
     return user_datasets
 
+def process_hhar_all_har_files(data_folder_path):
+    """
+    Preprocess all files of from the HHAR dataset
+    Data files can be found at http://archive.ics.uci.edu/ml/datasets/heterogeneity+activity+recognition
+    Args:
+        data_folder_path: folder path
+
+    Returns:
+        user_datasets (a list containing data collected from the acc + gyro from both smartphones and watches)
+    """
+    har_phone_acc = pd.read_csv(os.path.join(data_folder_path, 'Phones_accelerometer.csv'))
+    har_phone_acc['Device'] = "Phone acc"
+    har_phone_gyro = pd.read_csv(os.path.join(data_folder_path, 'Phones_gyroscope.csv'))
+    har_phone_gyro['Device'] = "Phone gyro"
+    har_watch_acc = pd.read_csv(os.path.join(data_folder_path, 'Watch_accelerometer.csv'))
+    har_watch_acc['Device'] = "Watch acc"
+    har_watch_gyro = pd.read_csv(os.path.join(data_folder_path, 'Watch_gyroscope.csv'))
+    har_watch_gyro['Device'] = "Watch gyro"
+    acc_data = pd.concat([har_phone_acc, har_watch_acc])
+    gyro_data = pd.concat([har_phone_gyro, har_watch_gyro])
+
+    # acc_data.dropna(how="any", inplace=True)
+    acc_data = acc_data[["x", "y", "z", "gt", "User", "Device"]]
+    acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
+    har_users = acc_data["user-id"].unique()
+
+    acc_datasets = {}
+    for user in har_users:
+        user_extract = acc_data[acc_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        # data["data-source"] = "HHAR"
+        labels = user_extract["activity"].values
+        print(f"{user} {data.shape}")
+        acc_datasets[user] = [(data, labels)]
+
+    # gyro_data.dropna(how="any", inplace=True)
+    gyro_data = gyro_data[["x", "y", "z", "gt", "User", "Device"]]
+    gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
+    gyro_datasets = {}
+    for user in har_users:
+        user_extract = gyro_data[gyro_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        # data["data-source"] = "HHAR"
+        labels = user_extract["activity"].values
+        print(f"{user} {data.shape}")
+        gyro_datasets[user] = [(data, labels)]
+
+    all_data = {}
+    gyro_acc_data = pd.concat([acc_data, gyro_data])
+    gyro_acc_data.dropna(how="any", inplace=True)
+
+    for user in har_users:
+        user_extract = gyro_acc_data[gyro_acc_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        # data["data-source"] = "HHAR"
+        labels = user_extract["activity"].values
+        print(f"{user} {data.shape}")
+        all_data[user] = [(data, labels)]
+
+    user_datasets = {'acc': acc_datasets,
+                     'gyro': gyro_datasets, 
+                     'all': all_data}
+    return user_datasets
 
 def store_pickle(dataset, filename):
     with open(filename+'.pickle', 'wb') as file:
