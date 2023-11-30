@@ -80,7 +80,7 @@ def eval_pamap():
         shift=200
     )
     core_model = self_har_models.create_CNN_LSTM_Model((400,3))
-    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, core_model, 9, tf.keras.optimizers.Adam(learning_rate=0.0002))
+    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, core_model, 9, tf.keras.optimizers.Adam(learning_rate=0.001))
 
     eval_model(user_dataset_preprocessed, labels, composite_model)
 
@@ -101,7 +101,7 @@ def eval_pamap():
         shift=200
     )
 
-    ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 19, tf.keras.optimizers.Adam(learning_rate=0.0002))
+    ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 19, tf.keras.optimizers.Adam(learning_rate=0.001))
     eval_model(har_preprocessed, labels, har_model)
 
 if __name__ == '__main__':
