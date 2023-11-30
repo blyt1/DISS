@@ -35,10 +35,10 @@ def train_self_supervised_model(df, core_model, label_size, optimizer):
 
     composite_model = self_har_models.attach_full_har_classification_head(core_model=core_model, 
                                                                           output_shape=label_size, 
-                                                                          optimizer=optimizer,
-                                                                          callbacks=[callback])
+                                                                          optimizer=optimizer)
     history = composite_model.fit(df[0][0], df[0][1]
-                    , epochs=100, validation_data=(df[1][0], df[1][1]))
+                    , epochs=100, validation_data=(df[1][0], df[1][1]),
+                                                                          callback=[callback])
     return history, composite_model
 
 
@@ -61,10 +61,9 @@ def downstream_testing(df, model, label_size, optimizer):
     core_model = self_har_models.extract_core_model(model)
     har_model = self_har_models.attach_full_har_classification_head(core_model=core_model, 
                                                                           output_shape=label_size, 
-                                                                          optimizer=optimizer,
-                                                                          callbacks=[callback])
+                                                                          optimizer=optimizer)
     history = har_model.fit(df[0][0], df[0][1]
-                    , epochs=100, validation_data=(df[1][0], df[1][1]))
+                    , epochs=100, validation_data=(df[1][0], df[1][1]), callback=[callback])
     return history, har_model
 
 
