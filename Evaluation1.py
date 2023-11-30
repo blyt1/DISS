@@ -31,9 +31,12 @@ def prepare_self_supervised_learning_dataset(sensor_type, train_users, test_user
 
 
 def train_self_supervised_model(df, core_model, label_size, optimizer):
+    callback = tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)
+
     composite_model = self_har_models.attach_full_har_classification_head(core_model=core_model, 
                                                                           output_shape=label_size, 
-                                                                          optimizer=optimizer)
+                                                                          optimizer=optimizer,
+                                                                          callbacks=[callback])
     history = composite_model.fit(df[0][0], df[0][1]
                     , epochs=100, validation_data=(df[1][0], df[1][1]))
     return history, composite_model
@@ -54,11 +57,12 @@ def eval_model(df, labels, model):
     return cnn_test_result
 
 def downstream_testing(df, model, label_size, optimizer):
-
+    callback = tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)
     core_model = self_har_models.extract_core_model(model)
     har_model = self_har_models.attach_full_har_classification_head(core_model=core_model, 
                                                                           output_shape=label_size, 
-                                                                          optimizer=optimizer)
+                                                                          optimizer=optimizer,
+                                                                          callbacks=[callback])
     history = har_model.fit(df[0][0], df[0][1]
                     , epochs=100, validation_data=(df[1][0], df[1][1]))
     return history, har_model
@@ -83,7 +87,8 @@ def eval_downstream_model(df, har_df, sensor_type):
         shift=200
     )
     core_model = self_har_models.create_CNN_LSTM_Model((400,3))
-    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, core_model, outputshape, tf.keras.optimizers.Adam(learning_rate=0.0005))
+    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, core_model, outputshape, 
+                                                           tf.keras.optimizers.Adam(learning_rate=0.0005))
 
     eval_model(user_dataset_preprocessed, labels, composite_model)
 
