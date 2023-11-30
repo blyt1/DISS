@@ -257,7 +257,7 @@ def process_PAMAP2_all_data(data_folder_path):
     pamap_acc_datasets = {}
     for user in PAMAP_users:
         user_extract = pamap_acc_data[pamap_acc_data["user-id"] == user]
-        # user_extract = user_extract.dropna()
+        user_extract = user_extract.dropna()
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "PAMAP"
         labels = user_extract["device"].values
@@ -267,7 +267,7 @@ def process_PAMAP2_all_data(data_folder_path):
     pamap_gyro_datasets = {}
     for user in PAMAP_users:
         user_extract = pamap_gyro_data[pamap_gyro_data["user-id"] == user]
-        # user_extract = user_extract.dropna()
+        user_extract = user_extract.dropna()
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "PAMAP"
         labels = user_extract["device"].values
@@ -278,7 +278,7 @@ def process_PAMAP2_all_data(data_folder_path):
     pamap_mag_datasets = {}
     for user in PAMAP_users:
         user_extract = pamap_mag_data[pamap_mag_data["user-id"] == user]
-        # user_extract = user_extract.dropna()
+        user_extract = user_extract.dropna()
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "PAMAP"
         labels = user_extract["device"].values
@@ -415,7 +415,7 @@ def process_pamap2_har_files(data_folder_path):
     pamap_acc_datasets = {}
     for user in PAMAP_users:
         user_extract = pamap_acc_data[pamap_acc_data["user-id"] == user]
-        # user_extract = user_extract.dropna()
+        user_extract = user_extract.dropna()
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "PAMAP"
         labels = user_extract["activity"]
@@ -425,7 +425,7 @@ def process_pamap2_har_files(data_folder_path):
     pamap_gyro_datasets = {}
     for user in PAMAP_users:
         user_extract = pamap_gyro_data[pamap_gyro_data["user-id"] == user]
-        # user_extract = user_extract.dropna()
+        user_extract = user_extract.dropna()
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "PAMAP"
         labels = user_extract["activity"]
@@ -436,7 +436,7 @@ def process_pamap2_har_files(data_folder_path):
     pamap_mag_datasets = {}
     for user in PAMAP_users:
         user_extract = pamap_mag_data[pamap_mag_data["user-id"] == user]
-        # user_extract = user_extract.dropna()
+        user_extract = user_extract.dropna()
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "PAMAP"
         labels = user_extract["activity"]
