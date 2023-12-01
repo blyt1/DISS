@@ -357,8 +357,8 @@ def process_motion_sense_all_files(data_folder_path):
                     all_data[user_id][0] = ((np.append(all_data[user_id][0][0], values)), (np.append(all_data[user_id][0][1], labels)))
                 else:
                     print("[ERR] User id not found", trial_user_file)
-            if(folder[46:49] == "acc"):
-                user_datasets.update({'Acc': sensor_data})
+            if(folder[46:49] == "Acc"):
+                user_datasets.update({'acc': sensor_data})
             else:
                 user_datasets.update({'gyro': sensor_data})
     user_datasets.update({'all': all_data})
@@ -570,14 +570,12 @@ def process_motion_sense_all_har_files(data_folder_path):
                     sensor_data[user_id][0] = ((np.append(sensor_data[user_id][0][0], values)), (np.append(sensor_data[user_id][0][1], labels)))
                     all_data[user_id].append((values, labels))
                     all_data[user_id][0] = ((np.append(all_data[user_id][0][0], values)), (np.append(all_data[user_id][0][1], labels)))
-
                 else:
                     print("[ERR] User id not found", trial_user_file)
             if(folder[46:49] == "Acc"):
                 user_datasets.update({'acc': sensor_data})
             else:
                 user_datasets.update({'gyro': sensor_data})
-    print("here")
     user_datasets.update({'all': all_data})
     return user_datasets
 
