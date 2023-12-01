@@ -9,7 +9,7 @@ import tensorflow as tf
 def get_labels(data):
     all_labels = []
     for user in data:
-        all_labels = np.concatenate((np.unique(data[user][0][1]), all_labels))
+        all_labels = np.concatenate((np.unique(data[user][0][1].apply(str)), all_labels))
     labels = np.unique(all_labels)
     return labels
 
