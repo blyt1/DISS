@@ -160,7 +160,7 @@ def process_hhar_all_files(data_folder_path):
     acc_data = pd.concat([har_phone_acc, har_watch_acc])
     gyro_data = pd.concat([har_phone_gyro, har_watch_gyro])
 
-    # acc_data.dropna(how="any", inplace=True)
+    acc_data.dropna(how="any", inplace=True)
     acc_data = acc_data[["x", "y", "z", "gt", "User", "Device"]]
     acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     har_users = acc_data["user-id"].unique()
@@ -174,7 +174,7 @@ def process_hhar_all_files(data_folder_path):
         print(f"{user} {data.shape}")
         acc_datasets[user] = [(data, labels)]
 
-    # gyro_data.dropna(how="any", inplace=True)
+    gyro_data.dropna(how="any", inplace=True)
     gyro_data = gyro_data[["x", "y", "z", "gt", "User", "Device"]]
     gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     gyro_datasets = {}
@@ -339,7 +339,7 @@ def process_motion_sense_all_files(data_folder_path):
 
                     # Read file
                     user_trial_dataset = pd.read_csv(trial_user_file)
-                    # user_trial_dataset.dropna(how="any", inplace=True)
+                    user_trial_dataset.dropna(how="any", inplace=True)
 
                     # Extract the x, y, z channels
                     values = user_trial_dataset[["x", "y", "z"]].values
@@ -351,12 +351,14 @@ def process_motion_sense_all_files(data_folder_path):
                         sensor_data[user_id] = []
                     if user_id not in all_data:
                         all_data[user_id] = []
-                    sensor_data[user_id].append((values, labels))
+                    sensor_data[user_id].append((values, labels)) # need to fix this line of code cuz it's redundant
+                    sensor_data[user_id][0] = ((np.append(sensor_data[user_id][0][0], values)), (np.append(sensor_data[user_id][0][1], labels)))
                     all_data[user_id].append((values, labels))
+                    all_data[user_id][0] = ((np.append(all_data[user_id][0][0], values)), (np.append(all_data[user_id][0][1], labels)))
                 else:
                     print("[ERR] User id not found", trial_user_file)
             if(folder[46:49] == "acc"):
-                user_datasets.update({'acc': sensor_data})
+                user_datasets.update({'Acc': sensor_data})
             else:
                 user_datasets.update({'gyro': sensor_data})
     user_datasets.update({'all': all_data})
@@ -525,7 +527,59 @@ def process_hhar_all_har_files(data_folder_path):
     return user_datasets
 
 def process_motion_sense_all_har_files(data_folder_path):
-    pass
+    user_datasets = {}
+    all_sensor_folders = sorted(glob.glob(data_folder_path + "/*"))
+    all_data = {}
+    for folder in all_sensor_folders:
+        # print(folder)
+        sensor_data = {}
+        print(folder[46:49])
+        all_trials_folders = sorted(glob.glob(folder + "/*"))
+        # Loop through every trial folder
+        for trial_folder in all_trials_folders:
+            trial_name = os.path.split(trial_folder)[-1]
+
+            # label of the trial is given in the folder name, separated by underscore
+            label = trial_name.split("_")[0]
+            # label_set[label] = True
+            # print(label)
+
+            # Loop through files for every user of the trail
+            for trial_user_file in sorted(glob.glob(trial_folder + "/*.csv")):
+
+                # use regex to match the user id
+                user_id_match = re.search(r'(?P<user_id>[0-9]+)\.csv', os.path.split(trial_user_file)[-1])
+                if user_id_match is not None:
+                    user_id = str(int(user_id_match.group('user_id')))
+
+                    # Read file
+                    user_trial_dataset = pd.read_csv(trial_user_file)
+                    user_trial_dataset.dropna(how="any", inplace=True)
+
+                    # Extract the x, y, z channels
+                    values = user_trial_dataset[["x", "y", "z"]].values
+
+                    # the label is the same during the entire trial, so it is repeated here to pad to the same length as the values
+                    labels = np.repeat(label, values.shape[0])
+
+                    if user_id not in sensor_data:
+                        sensor_data[user_id] = []
+                    if user_id not in all_data:
+                        all_data[user_id] = []
+                    sensor_data[user_id].append((values, labels)) # need to fix this line of code cuz it's redundant
+                    sensor_data[user_id][0] = ((np.append(sensor_data[user_id][0][0], values)), (np.append(sensor_data[user_id][0][1], labels)))
+                    all_data[user_id].append((values, labels))
+                    all_data[user_id][0] = ((np.append(all_data[user_id][0][0], values)), (np.append(all_data[user_id][0][1], labels)))
+
+                else:
+                    print("[ERR] User id not found", trial_user_file)
+            if(folder[46:49] == "Acc"):
+                user_datasets.update({'acc': sensor_data})
+            else:
+                user_datasets.update({'gyro': sensor_data})
+    print("here")
+    user_datasets.update({'all': all_data})
+    return user_datasets
 
 def store_pickle(dataset, filename):
     with open(filename+'.pickle', 'wb') as file:
