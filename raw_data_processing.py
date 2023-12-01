@@ -481,7 +481,7 @@ def process_hhar_all_har_files(data_folder_path):
     acc_data = pd.concat([har_phone_acc, har_watch_acc])
     gyro_data = pd.concat([har_phone_gyro, har_watch_gyro])
 
-    # acc_data.dropna(how="any", inplace=True)
+    acc_data.dropna(how="any", inplace=True)
     acc_data = acc_data[["x", "y", "z", "gt", "User", "Device"]]
     acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     har_users = acc_data["user-id"].unique()
@@ -491,11 +491,11 @@ def process_hhar_all_har_files(data_folder_path):
         user_extract = acc_data[acc_data["user-id"] == user]
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "HHAR"
-        labels = user_extract["activity"].values
+        labels = user_extract["activity"]
         print(f"{user} {data.shape}")
         acc_datasets[user] = [(data, labels)]
 
-    # gyro_data.dropna(how="any", inplace=True)
+    gyro_data.dropna(how="any", inplace=True)
     gyro_data = gyro_data[["x", "y", "z", "gt", "User", "Device"]]
     gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     gyro_datasets = {}
@@ -503,7 +503,7 @@ def process_hhar_all_har_files(data_folder_path):
         user_extract = gyro_data[gyro_data["user-id"] == user]
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "HHAR"
-        labels = user_extract["activity"].values
+        labels = user_extract["activity"]
         print(f"{user} {data.shape}")
         gyro_datasets[user] = [(data, labels)]
 
@@ -515,7 +515,7 @@ def process_hhar_all_har_files(data_folder_path):
         user_extract = gyro_acc_data[gyro_acc_data["user-id"] == user]
         data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
         # data["data-source"] = "HHAR"
-        labels = user_extract["activity"].values
+        labels = user_extract["activity"]
         print(f"{user} {data.shape}")
         all_data[user] = [(data, labels)]
 
@@ -523,6 +523,9 @@ def process_hhar_all_har_files(data_folder_path):
                      'gyro': gyro_datasets, 
                      'all': all_data}
     return user_datasets
+
+def process_motion_sense_all_har_files(data_folder_path):
+    pass
 
 def store_pickle(dataset, filename):
     with open(filename+'.pickle', 'wb') as file:
