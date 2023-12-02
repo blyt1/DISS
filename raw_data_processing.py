@@ -314,6 +314,7 @@ def concat_datasets(datasets, sensor_type):
 def process_motion_sense_all_files(data_folder_path):
     user_datasets = {}
     all_sensor_folders = sorted(glob.glob(data_folder_path + "/*"))
+    all_data = pd.DataFrame()
     for folder in all_sensor_folders:
         # print(folder)
         print(folder[46:49])
@@ -321,7 +322,6 @@ def process_motion_sense_all_files(data_folder_path):
         df = pd.DataFrame()
 
         for trial_folder in all_trials_folders:
-            trial_name = os.path.split(trial_folder)[-1]
 
             # label of the trial is given in the folder name, separated by underscore
             label = "iphone " + folder[46:49]
@@ -332,9 +332,10 @@ def process_motion_sense_all_files(data_folder_path):
                     user_id = int(user_id_match.group('user_id'))
                     user_trial_dataset = pd.read_csv(trial_user_file)
                     table = user_trial_dataset[["x", "y", "z"]]
-                    table['activity'] = label
+                    table['device'] = label
                     table['User-ID'] = str(user_id)
                     df = pd.concat([df, table])
+                    all_data = pd.concat([all_data, table])
                 else:
                     print("[ERR] User id not found", trial_user_file)
         sensor_datasets = {}
@@ -342,13 +343,21 @@ def process_motion_sense_all_files(data_folder_path):
         for user in ms_users:
             user_extract = df[df['User-ID'] == user]
             data = user_extract[["x", "y", "z"]].copy()
-            labels = user_extract['activity']
+            labels = user_extract['device']
             sensor_datasets[user] = [(data, labels)]
+
         if(folder[46:49] == "Acc"):
             user_datasets.update({'acc': sensor_datasets})
         else:
             user_datasets.update({'gyro': sensor_datasets})
-        user_datasets.update({'all': sensor_datasets})
+    sensor_datasets = {}
+    ms_users = all_data['User-ID'].unique()
+    for user in ms_users:
+        user_extract = all_data[all_data['User-ID'] == user]
+        data = user_extract[["x", "y", "z"]].copy()
+        labels = user_extract['device']
+        sensor_datasets[user] = [(data, labels)]
+    user_datasets.update({'all': sensor_datasets})
     return user_datasets
 
 def process_pamap2_har_files(data_folder_path):
@@ -516,6 +525,7 @@ def process_hhar_all_har_files(data_folder_path):
 def process_motion_sense_all_har_files(data_folder_path):
     user_datasets = {}
     all_sensor_folders = sorted(glob.glob(data_folder_path + "/*"))
+    all_data = pd.DataFrame()
     for folder in all_sensor_folders:
         # print(folder)
         print(folder[46:49])
@@ -537,6 +547,7 @@ def process_motion_sense_all_har_files(data_folder_path):
                     table['activity'] = label
                     table['User-ID'] = str(user_id)
                     df = pd.concat([df, table])
+                    all_data = pd.concat([all_data, table])
                 else:
                     print("[ERR] User id not found", trial_user_file)
         sensor_datasets = {}
@@ -550,7 +561,15 @@ def process_motion_sense_all_har_files(data_folder_path):
             user_datasets.update({'acc': sensor_datasets})
         else:
             user_datasets.update({'gyro': sensor_datasets})
-        user_datasets.update({'all': sensor_datasets})
+        
+    sensor_datasets = {}
+    ms_users = all_data['User-ID'].unique()
+    for user in ms_users:
+        user_extract = all_data[all_data['User-ID'] == user]
+        data = user_extract[["x", "y", "z"]].copy()
+        labels = user_extract['activity']
+        sensor_datasets[user] = [(data, labels)]
+    user_datasets.update({'all': sensor_datasets})
     return user_datasets
 
 def store_pickle(dataset, filename):
