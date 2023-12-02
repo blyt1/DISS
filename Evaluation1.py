@@ -95,8 +95,9 @@ def eval_downstream_model(df, har_df, sensor_type):
     har_labels = dataset_pre_processing.get_labels(har_df)
 
     har_label_map = {label: index for index, label in enumerate(har_labels)}
+    all_info = []
 
-    for i in range(3, user_test_size):
+    for i in range(3, user_train_size):
         har_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
         user_datasets=har_df,
         label_map=har_label_map,
@@ -111,21 +112,15 @@ def eval_downstream_model(df, har_df, sensor_type):
         downstream_eval = eval_model(har_preprocessed, har_labels, har_model)
         print("Trained " + str(i) + " users")
         print(downstream_eval)
-    
-
-def eval_hhar():
-    with open('pickled_datasets/hhar2.pickle', 'rb') as file:
-        hhar_df = pickle.load(file)
-    hhar_df = dataset_pre_processing.concat_datasets([hhar_df], sensor_type='acc')
-
-
-    pass
+        info = "Trained " + str(i) + " users " + str(downstream_eval) 
+        all_info.append(info)
+    print("\n")
+    print(all_info)
 
 if __name__ == '__main__':
-    with open('pickled_datasets/pamap2.pickle', 'rb') as file:
+    with open('pickled_datasets/motionsense2.pickle', 'rb') as file:
         pamap_df = pickle.load(file)
-    with open('pickled_datasets/pamap_har.pickle', 'rb') as file:
+    with open('pickled_datasets/motionsense_har.pickle', 'rb') as file:
         pamap_har_df = pickle.load(file)
-    print(pamap_df)
-    eval_downstream_model(pamap_df, pamap_har_df, 'all')
+    eval_downstream_model(pamap_df, pamap_har_df, 'acc')
     pass
