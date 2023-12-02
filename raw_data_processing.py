@@ -362,6 +362,26 @@ def process_motion_sense_all_files(data_folder_path):
 
 def process_pamap2_har_files(data_folder_path):
     combined_data = []
+    map = {}
+    map[0] = 'transient'
+    map[1] = 'lying'
+    map[2] = 'sitting'
+    map[3] = 'standing'
+    map[4] = 'walking'
+    map[5] = 'running'
+    map[6] = 'cycling'
+    map[7] = 'Nordic_walking'
+    map[9] = 'watching_TV'
+    map[10] = 'computer_work'
+    map[11] = 'car driving'
+    map[12] = 'ascending_stairs'
+    map[13] = 'descending_stairs'
+    map[16] = 'vacuum_cleaning'
+    map[17] = 'ironing'
+    map[18] = 'folding_laundry'
+    map[19] = 'house_cleaning'
+    map[20] = 'playing_soccer'
+    map[24] = 'rope_jumping'
 
     for filename in os.listdir(data_folder_path):
         if filename.endswith('.dat'):
@@ -371,6 +391,7 @@ def process_pamap2_har_files(data_folder_path):
             combined_data.append(df)
     
     user_df = pd.concat(combined_data, ignore_index=True)
+    user_df[1].replace(map, inplace=True)
     hand_acc_data = user_df.loc[:, [4, 5, 6, 1, 'User-ID']]
     hand_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
     hand_acc_data['device'] = "IMU hand acc"
