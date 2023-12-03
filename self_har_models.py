@@ -420,3 +420,23 @@ def create_LSTM_CNN_Model(input_shape, model_name="LSTM_CNN"):
     return tf.keras.Model(inputs, outputs, name= model_name)
 
 
+def create_transformer_model(input_shape, model_name="Transformer"):
+    inputs = tf.keras.Input(shape=input_shape, name='input')
+    x = tf.keras.layers.MultiHeadAttention(
+        key_dim=512,
+        num_heads=16,
+        dropout=0.25,
+    )(x, x)
+    x = tf.keras.layers.Dropout(0.25)(x)
+    x = tf.keras.layers.LayerNormalization(epsilon=1e-6)(x)
+    res = x + inputs
+
+    x = tf.keras.layers.Dense(128 , activation='relu')(res)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = tf.keras.layers.LayerNormalization(epsilon=1e-6)(x)
+    x = tf.keras.layers.Dense(3)(x)
+    x = x + res
+    x = tf.keras.layers.GlobalMaxPool1D(data_format='channels_last', name='global_max_pooling1d')(x) 
+
+    outputs = tf.keras.layers.Softmax()(x)
+    return tf.keras.Model(inputs, outputs, name=model_name)
