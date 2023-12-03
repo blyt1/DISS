@@ -66,7 +66,7 @@ def downstream_testing(df, model, label_size, optimizer):
     return history, har_model
 
 
-def eval_downstream_model(df, har_df, sensor_type):
+def eval_downstream_model(df, har_df, sensor_type, core_model='CNN_LSTM'):
     df = dataset_pre_processing.concat_datasets([df], sensor_type=sensor_type)
     outputshape = len(set(df[list(df.keys())[0]][0][1]))
     users = list(df.keys())
@@ -84,8 +84,19 @@ def eval_downstream_model(df, har_df, sensor_type):
         window_size=400, 
         shift=200
     )
-    core_model = self_har_models.create_CNN_LSTM_Model((400,3))
-    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, core_model, outputshape, 
+    if core_model == 'CNN_LSTM':
+        cm = self_har_models.create_CNN_LSTM_Model((400,3))
+    elif core_model == 'LSTM_CNN':
+        cm = self_har_models.create_LSTM_CNN_Model((400,3))
+    elif core_model == 'LSTM':
+        cm = self_har_models.create_LSTM_Model((400,3))
+    elif core_model == 'Transformer':
+        cm = self_har_models.create_transformer_model((400,3))
+    else:
+        print('cannot find model, training CNN-LSTM model isntead')
+        cm = self_har_models.create_CNN_LSTM_Model((400,3))
+
+    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, cm, outputshape, 
                                                            tf.keras.optimizers.Adam(learning_rate=0.0005))
 
     eval_model(user_dataset_preprocessed, labels, composite_model)
@@ -116,11 +127,3 @@ def eval_downstream_model(df, har_df, sensor_type):
         all_info.append(info)
     print("\n")
     print(all_info)
-
-if __name__ == '__main__':
-    with open('pickled_datasets/motionsense2.pickle', 'rb') as file:
-        pamap_df = pickle.load(file)
-    with open('pickled_datasets/motionsense_har.pickle', 'rb') as file:
-        pamap_har_df = pickle.load(file)
-    eval_downstream_model(pamap_df, pamap_har_df, 'acc')
-    pass
