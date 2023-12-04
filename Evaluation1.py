@@ -138,3 +138,73 @@ def eval_downstream_model(df, har_df, sensor_type, training_users=None, testing_
     return (all_info)
 
 
+def eval_multi_model(df_list, har_df_list, output_shape, har_output_shape, sensor_type: "all", training_users=None, testing_users=None, core_model='CNN_LSTM', step=2):
+    df = dataset_pre_processing.concat_datasets(df_list, sensor_type=sensor_type)
+    outputshape = output_shape
+    users = list(df.keys())
+    
+    if training_users == None:
+        user_train_size = int(len(users)*.8)
+        training_users = users[0:(user_train_size)]
+    else:
+        user_train_size = len(training_users)
+
+    if testing_users == None:
+        user_test_size = len(users) - user_train_size
+        testing_users = users[user_train_size:(user_train_size + user_test_size)]
+    else:
+        user_test_size = len(testing_users)
+    
+    labels = dataset_pre_processing.get_labels(df)
+    label_map = {label: index for index, label in enumerate(labels)}
+    user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
+        user_datasets=df, 
+        label_map=label_map, 
+        output_shape=outputshape,
+        train_users=training_users,
+        test_users=testing_users,
+        window_size=400, 
+        shift=200
+    )
+    if core_model == 'CNN_LSTM':
+        cm = self_har_models.create_CNN_LSTM_Model((400,3))
+    elif core_model == 'LSTM_CNN':
+        cm = self_har_models.create_LSTM_CNN_Model((400,3))
+    elif core_model == 'LSTM':
+        cm = self_har_models.create_LSTM_Model((400,3))
+    elif core_model == 'Transformer':
+        cm = self_har_models.create_transformer_model((400,3))
+    else:
+        print('cannot find model, training CNN-LSTM model isntead')
+        cm = self_har_models.create_CNN_LSTM_Model((400,3))
+
+    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, cm, outputshape, 
+                                                           tf.keras.optimizers.Adam(learning_rate=0.0005))
+
+    eval_model(user_dataset_preprocessed, labels, composite_model)
+
+    har_df = dataset_pre_processing.concat_datasets(har_df_list, sensor_type=sensor_type)
+    outputshape2 = har_output_shape
+    har_labels = dataset_pre_processing.get_labels(har_df)
+
+    har_label_map = {label: index for index, label in enumerate(har_labels)}
+    all_info = []
+    for i in range(3, user_train_size, step):
+        har_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
+        user_datasets=har_df,
+        label_map=har_label_map,
+        output_shape=outputshape2,
+        train_users=users[0:i],
+        test_users=testing_users,
+        window_size=400,
+        shift=200
+        )
+        ds_history, har_model = downstream_testing(har_preprocessed, composite_model, outputshape2, 
+                                               tf.keras.optimizers.Adam(learning_rate=0.0005))
+        downstream_eval = eval_model(har_preprocessed, har_labels, har_model)
+        print("Trained " + str(i) + " users")
+        print(downstream_eval)
+        info = "Trained " + str(i) + " users " + str(downstream_eval) 
+        all_info.append(info)
+    print("\n")
+    return (all_info)
