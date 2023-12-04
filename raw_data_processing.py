@@ -593,6 +593,76 @@ def process_motion_sense_all_har_files(data_folder_path):
     user_datasets.update({'all': sensor_datasets})
     return user_datasets
 
+
+def process_HARTH_thigh_acc_data(data_folder_path):
+    combined_data = []
+    for filename in os.listdir(data_folder_path):
+            file_path = os.path.join(data_folder_path, filename)
+            df = pd.read_csv(file_path, sep=',', header=0, na_filter="NaN")
+            df['User-ID'] = filename[1:4]
+            combined_data.append(df)
+    df = pd.concat(combined_data)
+    df = df.replace(1, "walking")
+    df = df.replace(2, "running")
+    df = df.replace(3, "shuffling")
+    df = df.replace(4, "stairs (ascending)")
+    df = df.replace(5, "stairs (descending)")
+    df = df.replace(6, "standing")
+    df = df.replace(7, "sitting")
+    df = df.replace(8, "lying")
+    df = df.replace(13, "cycling (sit)")
+    df = df.replace(14, "cycling (stand)")
+    df = df.replace(130, "cycling (sit, inactive)")
+    df = df.replace(140, "cycling (stand, inactive)")
+    back_data = df.loc[:, ['User-ID', 'thigh_x', 'thigh_y', 'thigh_z', 'label']]
+    harth_user = back_data["User-ID"].unique()
+
+
+    user_datasets = {}
+    for user in harth_user:
+        user_extract = back_data[back_data['User-ID'] == user]
+        data = user_extract[['thigh_x', 'thigh_y', 'thigh_z']].values
+        labels = user_extract["label"].values
+        print(f"{user} {data.shape}")
+        user_datasets[user] = [(data, labels)]
+    return user_datasets
+
+
+def process_HARTH_back_acc_data(data_folder_path):
+    combined_data = []
+    for filename in os.listdir(data_folder_path):
+            file_path = os.path.join(data_folder_path, filename)
+            df = pd.read_csv(file_path, sep=',', header=0, na_filter="NaN")
+            df['User-ID'] = filename[1:4]
+            combined_data.append(df)
+    df = pd.concat(combined_data)
+    df = df.replace(1, "walking")
+    df = df.replace(2, "running")
+    df = df.replace(3, "shuffling")
+    df = df.replace(4, "stairs (ascending)")
+    df = df.replace(5, "stairs (descending)")
+    df = df.replace(6, "standing")
+    df = df.replace(7, "sitting")
+    df = df.replace(8, "lying")
+    df = df.replace(13, "cycling (sit)")
+    df = df.replace(14, "cycling (stand)")
+    df = df.replace(130, "cycling (sit, inactive)")
+    df = df.replace(140, "cycling (stand, inactive)")
+    back_data = df.loc[:, ['User-ID', 'back_x', 'back_y', 'back_z', 'label']]
+    harth_user = back_data["User-ID"].unique()
+
+
+    user_datasets = {}
+    for user in harth_user:
+        user_extract = back_data[back_data['User-ID'] == user]
+        data = user_extract[['back_x', 'back_y', 'back_z']].values
+        labels = user_extract["label"].values
+        print(f"{user} {data.shape}")
+        user_datasets[user] = [(data, labels)]
+    return user_datasets
+
+
+
 def store_pickle(dataset, filename):
     with open(filename+'.pickle', 'wb') as file:
         pickle.dump(dataset, file)
