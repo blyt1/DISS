@@ -66,21 +66,31 @@ def downstream_testing(df, model, label_size, optimizer):
     return history, har_model
 
 
-def eval_downstream_model(df, har_df, sensor_type, core_model='CNN_LSTM'):
+def eval_downstream_model(df, har_df, sensor_type, training_users=None, testing_users=None, core_model='CNN_LSTM', step=1):
     df = dataset_pre_processing.concat_datasets([df], sensor_type=sensor_type)
     outputshape = len(set(df[list(df.keys())[0]][0][1]))
     users = list(df.keys())
-    user_train_size = int(len(users)*.8)
-    user_test_size = len(users) - user_train_size
-    test_users = users[user_train_size:(user_train_size + user_test_size - 1)]
+    
+    if training_users == None:
+        user_train_size = int(len(users)*.8)
+        training_users = users[0:(user_train_size)]
+    else:
+        user_train_size = len(training_users)
+
+    if testing_users == None:
+        user_test_size = len(users) - user_train_size
+        testing_users = users[user_train_size:(user_train_size + user_test_size)]
+    else:
+        user_test_size = len(testing_users)
+    
     labels = dataset_pre_processing.get_labels(df)
     label_map = {label: index for index, label in enumerate(labels)}
     user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
         user_datasets=df, 
         label_map=label_map, 
         output_shape=outputshape,
-        train_users=users[0:(user_train_size)],
-        test_users=users[user_train_size:(user_train_size + user_test_size)],
+        train_users=training_users,
+        test_users=testing_users,
         window_size=400, 
         shift=200
     )
@@ -107,14 +117,13 @@ def eval_downstream_model(df, har_df, sensor_type, core_model='CNN_LSTM'):
 
     har_label_map = {label: index for index, label in enumerate(har_labels)}
     all_info = []
-
-    for i in range(3, user_train_size):
+    for i in range(3, user_train_size, step):
         har_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
         user_datasets=har_df,
         label_map=har_label_map,
         output_shape=outputshape2,
         train_users=users[0:i],
-        test_users=users[user_train_size:(user_train_size + user_test_size)],
+        test_users=testing_users,
         window_size=400,
         shift=200
         )
@@ -126,4 +135,6 @@ def eval_downstream_model(df, har_df, sensor_type, core_model='CNN_LSTM'):
         info = "Trained " + str(i) + " users " + str(downstream_eval) 
         all_info.append(info)
     print("\n")
-    print(all_info)
+    return (all_info)
+
+
