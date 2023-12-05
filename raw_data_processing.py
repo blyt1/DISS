@@ -625,7 +625,9 @@ def process_HARTH_thigh_acc_har_data(data_folder_path):
         labels = user_extract["label"].values
         print(f"{user} {data.shape}")
         user_datasets[user] = [(data, labels)]
-    return user_datasets
+    userdataset = {"acc": user_datasets,
+                    "all": user_datasets}
+    return userdataset
 
 
 def process_HARTH_back_acc_har_data(data_folder_path):
@@ -659,7 +661,9 @@ def process_HARTH_back_acc_har_data(data_folder_path):
         labels = user_extract["label"].values
         print(f"{user} {data.shape}")
         user_datasets[user] = [(data, labels)]
-    return user_datasets
+    userdataset = {"acc": user_datasets,
+                    "all": user_datasets}
+    return userdataset
 
 def process_HARTH_all_acc_data(data_folder_path):
     combined_data = []
