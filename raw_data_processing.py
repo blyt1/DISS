@@ -594,7 +594,7 @@ def process_motion_sense_all_har_files(data_folder_path):
     return user_datasets
 
 
-def process_HARTH_thigh_acc_data(data_folder_path):
+def process_HARTH_thigh_acc_har_data(data_folder_path):
     combined_data = []
     for filename in os.listdir(data_folder_path):
             file_path = os.path.join(data_folder_path, filename)
@@ -628,7 +628,7 @@ def process_HARTH_thigh_acc_data(data_folder_path):
     return user_datasets
 
 
-def process_HARTH_back_acc_data(data_folder_path):
+def process_HARTH_back_acc_har_data(data_folder_path):
     combined_data = []
     for filename in os.listdir(data_folder_path):
             file_path = os.path.join(data_folder_path, filename)
@@ -661,7 +661,33 @@ def process_HARTH_back_acc_data(data_folder_path):
         user_datasets[user] = [(data, labels)]
     return user_datasets
 
-
+def process_HARTH_all_acc_data(data_folder_path):
+    combined_data = []
+    for filename in os.listdir(data_folder_path):
+            file_path = os.path.join(data_folder_path, filename)
+            df = pd.read_csv(file_path, sep=',', header=0, na_filter="NaN")
+            df["User-ID"] = filename[1:4]
+            combined_data.append(df)
+    df = pd.concat(combined_data)
+    back_df = df.loc[:, ['User-ID', 'back_x', 'back_y', 'back_z']]
+    back_df.columns = ['User-ID', 'x', 'y', 'z']
+    back_df['device'] = "back_acc"
+    thigh_df = df.loc[:, ['User-ID', 'thigh_x', 'thigh_y', 'thigh_z']]
+    thigh_df.columns = ['User-ID', 'x', 'y', 'z']
+    thigh_df['device'] = "thigh_acc"
+    df = pd.concat([back_df, thigh_df])
+    harth_user = df['User-ID'].unique()
+    datasets = {}
+    for user in harth_user:
+        user_extract = df[df['User-ID'] == user]
+        data = user_extract[['x', 'y', 'z']]
+        labels = user_extract["device"]
+        print(f"{user} {data.shape}")
+        datasets[user] = [(data, labels)]
+    userdataset = {"acc": datasets,
+                    "all": datasets}
+    return userdataset
+    
 
 def store_pickle(dataset, filename):
     with open(filename+'.pickle', 'wb') as file:

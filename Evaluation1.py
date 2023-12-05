@@ -208,3 +208,26 @@ def eval_multi_model(df_list, har_df_list, output_shape, har_output_shape, senso
         all_info.append(info)
     print("\n")
     return (all_info)
+
+
+def eval_harth():
+    with open('pickled_datasets/pamap2.pickle', 'rb') as file:
+        pamap_df = pickle.load(file)
+    with open('pickled_datasets/hhar2.pickle', 'rb') as file:
+        hhar_df = pickle.load(file)
+    with open('pickled_datasets/motionsense2.pickle', 'rb') as file:
+        motion_sense_df = pickle.load(file)
+
+    cdf = dataset_pre_processing.concat_datasets([pamap_df, hhar_df, motion_sense_df], "acc")
+    labels = dataset_pre_processing.get_labels(cdf)
+    label_map = {label: index for index, label in enumerate(labels)}
+    user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
+    cdf, label_map, 6, 
+    ['101', '102', '103', '104', '105', '106', '107', 'a', 'b', 'c', 'd', 'e', 'f', 'g', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', "108", "109", "h", "i", "21", "22", "23", "24"], 
+    [], 400, 200
+    )
+    callback = tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)
+    cm = self_har_models.create_CNN_LSTM_Model((400,3))
+    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, cm, 14, 
+                                                           tf.keras.optimizers.Adam(learning_rate=0.0005))
+    
