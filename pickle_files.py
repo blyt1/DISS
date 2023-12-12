@@ -31,7 +31,7 @@ if __name__ == '__main__':
     pamap_har_df = process_pamap2_har_files("test_run/original_datasets/PAMAP2")
     hhar_har_df = process_hhar_all_har_files("test_run/original_datasets/hhar/Activity recognition exp")
     motion_sense_har_df = process_motion_sense_all_har_files("test_run/original_datasets/motionsense/Data/")
-    harth_har_df = process_HARTH_thigh_acc_har_data("test-run/original_datasets/harth")
+    harth_har_df = process_HARTH_thigh_acc_har_data("test_run/original_datasets/harth")
     dasa_har_df = process_dasa_all_har_data("test_run/original_datasets/data")
     wisdm_har_df = process_WISDM_all_har_data("test_run/original_datasets/wisdm-dataset/raw")
 
