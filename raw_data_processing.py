@@ -29,6 +29,8 @@ Complementing the work of Tang et al.: SelfHAR: Improving Human Activity Recogni
   keywords = {semi-supervised training, human activity recognition, unlabeled data, self-supervised training, self-training, deep learning}
 }
 
+
+
 Access to Article:
     https://doi.org/10.1145/3448112
     https://dl.acm.org/doi/abs/10.1145/3448112
