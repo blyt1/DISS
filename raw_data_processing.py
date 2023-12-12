@@ -954,7 +954,7 @@ def process_dasa_all_har_data(data_folder_path):
     return user_datasets
 
 
-def process_WISDM_acc_data(data_folder_path):
+def process_WISDM_all_data(data_folder_path):
     map = {
         'A': 'walking',
         'B': 'jogging',
@@ -1030,6 +1030,64 @@ def process_WISDM_acc_data(data_folder_path):
         'gyro': gyro_dataset,
         'all': all_dataset
         }
+    return user_dataset
+
+def process_WISDM_all_har_data(data_folder_path):
+    all_device_folders = sorted(glob.glob(data_folder_path + "/*"))
+    all_data = []
+    acc_data = []
+    gyro_data = []
+    for folder in all_device_folders:
+        device = os.path.split(folder)[-1]
+        all_sensor_folders = sorted(glob.glob(folder + "/*"))
+        for sensor_folder in all_sensor_folders:
+            sensor = os.path.split(sensor_folder)[-1]
+            label = device + " " + sensor
+            print(label)
+            for trial_user_file in sorted(glob.glob(sensor_folder + "/*.txt")):
+                df = pd.read_csv(trial_user_file, header=None)
+                df = df[[0, 1, 3, 4, 5]]
+                df.columns = ['user-id', 'activity', 'x-axis', 'y-axis', 'z-axis']
+                df = df.astype({'user-id': 'string'})
+                df['device'] = label
+                all_data.append(df)
+                if sensor == 'accel':
+                    acc_data.append(df)
+                elif sensor == 'gyro':
+                    gyro_data.append(df)
+    all_df = pd.concat(all_data)
+    acc_df = pd.concat(acc_data)
+    gyro_df = pd.concat(gyro_data)
+
+    all_users = all_df['user-id'].unique()
+    acc_dataset = {}
+    for user in all_users:
+        user_extract = acc_df[acc_df["user-id"] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["device"]
+        acc_dataset[user] = [(data, labels)]
+
+    gyro_dataset = {}
+    for user in all_users:
+        user_extract = gyro_df[gyro_df["user-id"] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["device"]
+        gyro_dataset[user] = [(data, labels)]
+
+    all_dataset = {}
+    for user in all_users:
+        user_extract = all_df[all_df["user-id"] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["device"]
+        all_dataset[user] = [(data, labels)]
+
+    user_dataset = {
+        'acc': acc_dataset, 
+        'gyro': gyro_dataset,
+        'all': all_dataset
+        }
+    return user_dataset
+
 
 def store_pickle(dataset, filename):
     with open(filename+'.pickle', 'wb') as file:
