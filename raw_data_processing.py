@@ -954,7 +954,7 @@ def process_dasa_all_har_data(data_folder_path):
     return user_datasets
 
 
-def process_WISDM_all_data(data_folder_path):
+def process_WISDM_all_har_data(data_folder_path):
     map = {
         'A': 'walking',
         'B': 'jogging',
@@ -992,6 +992,8 @@ def process_WISDM_all_data(data_folder_path):
                 df[1].replace(map, inplace=True)
                 df = df[[0, 1, 3, 4, 5]]
                 df.columns = ['user-id', 'activity', 'x-axis', 'y-axis', 'z-axis']
+                df['z-axis'].replace({';': ''}, regex=True, inplace=True)
+                df['z-axis']=pd.to_numeric(df['z-axis'],errors='coerce')
                 df = df.astype({'user-id': 'string'})
                 df['device'] = label
                 all_data.append(df)
@@ -1032,7 +1034,7 @@ def process_WISDM_all_data(data_folder_path):
         }
     return user_dataset
 
-def process_WISDM_all_har_data(data_folder_path):
+def process_WISDM_all_data(data_folder_path):
     all_device_folders = sorted(glob.glob(data_folder_path + "/*"))
     all_data = []
     acc_data = []
@@ -1049,6 +1051,8 @@ def process_WISDM_all_har_data(data_folder_path):
                 df = df[[0, 1, 3, 4, 5]]
                 df.columns = ['user-id', 'activity', 'x-axis', 'y-axis', 'z-axis']
                 df = df.astype({'user-id': 'string'})
+                df['z-axis'].replace({';': ''}, regex=True, inplace=True)
+                df['z-axis']=pd.to_numeric(df['z-axis'],errors='coerce')
                 df['device'] = label
                 all_data.append(df)
                 if sensor == 'accel':
