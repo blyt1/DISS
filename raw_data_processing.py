@@ -779,30 +779,29 @@ def process_dasa_all_data(data_folder_path):
     ll_mag_data['device'] = 'left leg mag'
 
     all_users = df['user-id'].unique()
-    acc_data = pd.concat([torso_acc_data, rl_acc_data, ll_acc_data, ra_acc_data, rl_acc_data])
-    acc_data = pd.concat([torso_acc_data, rl_acc_data, ll_acc_data, ra_acc_data, rl_acc_data])
+    acc_data = pd.concat([torso_acc_data, rl_acc_data, ll_acc_data, ra_acc_data, rl_acc_data], ignore_index=True)
     acc_datasets = {}
     for user in all_users:
         user_extract = acc_data[acc_data["user-id"] == user]
-        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
         labels = user_extract["device"].values
         print(f"{user} {data.shape}")
         acc_datasets[user] = [(data, labels)]
-
-    gyro_data = pd.concat([torso_gyro_data, rl_gyro_data, ll_gyro_data, ra_gyro_data, rl_gyro_data])
+    print('done acc')
+    gyro_data = pd.concat([torso_gyro_data, rl_gyro_data, ll_gyro_data, ra_gyro_data, rl_gyro_data],  ignore_index=True)
     gyro_datasets = {}
     for user in all_users:
         user_extract = gyro_data[gyro_data["user-id"] == user]
-        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
         labels = user_extract["device"].values
         print(f"{user} {data.shape}")
         gyro_datasets[user] = [(data, labels)]
 
-    mag_data = pd.concat([torso_mag_data, rl_mag_data, ll_mag_data, ra_mag_data, rl_mag_data])
+    mag_data = pd.concat([torso_mag_data, rl_mag_data, ll_mag_data, ra_mag_data, rl_mag_data],  ignore_index=True)
     mag_datasets = {}
     for user in all_users:
         user_extract = mag_data[mag_data["user-id"] == user]
-        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
         labels = user_extract["device"].values
         print(f"{user} {data.shape}")
         mag_datasets[user] = [(data, labels)]
@@ -811,7 +810,7 @@ def process_dasa_all_data(data_folder_path):
     all_datasets = {}
     for user in all_users:
         user_extract = all_data[all_data["user-id"] == user]
-        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
         labels = user_extract["device"].values
         print(f"{user} {data.shape}")
         all_datasets[user] = [(data, labels)]
@@ -907,30 +906,29 @@ def process_dasa_all_har_data(data_folder_path):
     ll_mag_data['device'] = 'left leg mag'
 
     all_users = df['user-id'].unique()
-    acc_data = pd.concat([torso_acc_data, rl_acc_data, ll_acc_data, ra_acc_data, rl_acc_data])
-    acc_data = pd.concat([torso_acc_data, rl_acc_data, ll_acc_data, ra_acc_data, rl_acc_data])
+    acc_data = pd.concat([torso_acc_data, rl_acc_data, ll_acc_data, ra_acc_data, rl_acc_data], ignore_index=True)
     acc_datasets = {}
     for user in all_users:
         user_extract = acc_data[acc_data["user-id"] == user]
-        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
         labels = user_extract["activity"].values
         print(f"{user} {data.shape}")
         acc_datasets[user] = [(data, labels)]
 
-    gyro_data = pd.concat([torso_gyro_data, rl_gyro_data, ll_gyro_data, ra_gyro_data, rl_gyro_data])
+    gyro_data = pd.concat([torso_gyro_data, rl_gyro_data, ll_gyro_data, ra_gyro_data, rl_gyro_data],  ignore_index=True)
     gyro_datasets = {}
     for user in all_users:
         user_extract = gyro_data[gyro_data["user-id"] == user]
-        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
         labels = user_extract["activity"].values
         print(f"{user} {data.shape}")
         gyro_datasets[user] = [(data, labels)]
 
-    mag_data = pd.concat([torso_mag_data, rl_mag_data, ll_mag_data, ra_mag_data, rl_mag_data])
+    mag_data = pd.concat([torso_mag_data, rl_mag_data, ll_mag_data, ra_mag_data, rl_mag_data],  ignore_index=True)
     mag_datasets = {}
     for user in all_users:
         user_extract = mag_data[mag_data["user-id"] == user]
-        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
         labels = user_extract["activity"].values
         print(f"{user} {data.shape}")
         mag_datasets[user] = [(data, labels)]
@@ -939,7 +937,7 @@ def process_dasa_all_har_data(data_folder_path):
     all_datasets = {}
     for user in all_users:
         user_extract = all_data[all_data["user-id"] == user]
-        data = user_extract[["x-axis", "y-axis", "z-axis"]].copy()
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
         labels = user_extract["activity"].values
         print(f"{user} {data.shape}")
         all_datasets[user] = [(data, labels)]
