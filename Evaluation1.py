@@ -1,3 +1,5 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import self_har_models
 import dataset_pre_processing
 import raw_data_processing
@@ -6,6 +8,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.get_logger().setLevel('INFO')
 
 def prepare_self_supervised_learning_dataset(sensor_type, train_users, test_users):
     with open('pickled_datasets/pamap2.pickle', 'rb') as file:
@@ -66,7 +69,7 @@ def downstream_testing(df, model, label_size, optimizer):
     return history, har_model
 
 
-def eval_downstream_model(df, har_df, sensor_type, training_users=None, testing_users=None, core_model='CNN_LSTM', step=1):
+def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_users=None, testing_users=None, core_model='CNN_LSTM', step=1):
     df = dataset_pre_processing.concat_datasets([df], sensor_type=sensor_type)
     outputshape = len(set(df[list(df.keys())[0]][0][1]))
     users = list(df.keys())
@@ -82,7 +85,6 @@ def eval_downstream_model(df, har_df, sensor_type, training_users=None, testing_
         testing_users = users[user_train_size:(user_train_size + user_test_size)]
     else:
         user_test_size = len(testing_users)
-    
     labels = dataset_pre_processing.get_labels(df)
     label_map = {label: index for index, label in enumerate(labels)}
     user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
@@ -92,7 +94,8 @@ def eval_downstream_model(df, har_df, sensor_type, training_users=None, testing_
         train_users=training_users,
         test_users=testing_users,
         window_size=400, 
-        shift=200
+        shift=200, 
+        verbose=1
     )
     if core_model == 'CNN_LSTM':
         cm = self_har_models.create_CNN_LSTM_Model((400,3))
@@ -111,7 +114,7 @@ def eval_downstream_model(df, har_df, sensor_type, training_users=None, testing_
 
     eval_model(user_dataset_preprocessed, labels, composite_model)
 
-    har_df = dataset_pre_processing.concat_datasets([har_df], sensor_type=sensor_type)
+    har_df = dataset_pre_processing.concat_datasets([har_df], sensor_type=har_sensor_type)
     outputshape2 = len(set(har_df[list(har_df.keys())[0]][0][1]))
     har_labels = dataset_pre_processing.get_labels(har_df)
 
