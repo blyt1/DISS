@@ -215,6 +215,8 @@ def process_PAMAP2_all_data(data_folder_path):
             combined_data.append(df)
     
     user_df = pd.concat(combined_data, ignore_index=True)
+    user_df.drop(user_df[user_df[1] == 0].index, inplace=True)
+
     hand_acc_data = user_df.loc[:, [4, 5, 6, 1, 'User-ID']]
     hand_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
     hand_acc_data['device'] = "IMU hand acc"
@@ -391,6 +393,8 @@ def process_pamap2_har_files(data_folder_path):
             combined_data.append(df)
     
     user_df = pd.concat(combined_data, ignore_index=True)
+    user_df.drop(user_df[user_df[1] == 0].index, inplace=True)
+    print(user_df.head())
     user_df[1].replace(map, inplace=True)
     hand_acc_data = user_df.loc[:, [4, 5, 6, 1, 'User-ID']]
     hand_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
