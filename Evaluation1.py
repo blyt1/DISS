@@ -2,7 +2,6 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import self_har_models
 import dataset_pre_processing
-import raw_data_processing
 import pickle
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -94,7 +93,7 @@ def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_use
         train_users=training_users,
         test_users=testing_users,
         window_size=400, 
-        shift=200, 
+        shift=10, 
         verbose=1
     )
     if core_model == 'CNN_LSTM':
@@ -128,7 +127,7 @@ def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_use
         train_users=users[0:i],
         test_users=testing_users,
         window_size=400,
-        shift=200
+        shift=10
         )
         ds_history, har_model = downstream_testing(har_preprocessed, composite_model, outputshape2, 
                                                tf.keras.optimizers.Adam(learning_rate=0.0005))
