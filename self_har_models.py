@@ -393,6 +393,7 @@ def create_LSTM_CNN_Model(input_shape, model_name="LSTM_CNN"):
         model (tf.keras.Model)
     """
     inputs = tf.keras.Input(shape=input_shape, name='input')
+    x = inputs
     x = tf.keras.layers.LSTM(300, return_sequences=True)(x)
     x = tf.keras.layers.LSTM(300, return_sequences=True)(x)
     x = tf.keras.layers.Conv1D(
@@ -422,6 +423,7 @@ def create_LSTM_CNN_Model(input_shape, model_name="LSTM_CNN"):
 
 def create_transformer_model(input_shape, model_name="Transformer"):
     inputs = tf.keras.Input(shape=input_shape, name='input')
+    x = inputs
     x = tf.keras.layers.MultiHeadAttention(
         key_dim=512,
         num_heads=16,
