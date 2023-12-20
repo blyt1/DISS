@@ -99,7 +99,7 @@ def process_motion_sense_accelerometer_files(accelerometer_data_folder_path):
                 # user_trial_dataset.dropna(how="any", inplace=True)
 
                 # Extract the x, y, z channels
-                values = user_trial_dataset[["x", "y", "z"]].values
+                values = user_trial_dataset[['x-axis', 'y-axis', 'z-axis']].values
 
                 # the label is the same during the entire trial, so it is repeated here to pad to the same length as the values
                 labels = np.repeat(label, values.shape[0])
@@ -124,7 +124,7 @@ def process_hhar_accelerometer_files(data_folder_path):
     har_dataset = pd.read_csv(
         os.path.join(data_folder_path, 'Phones_accelerometer.csv'))  # "<PATH_TO_HHAR_DATASET>/Phones_accelerometer.csv"
     har_dataset.dropna(how="any", inplace=True)
-    har_dataset = har_dataset[["x", "y", "z", "gt", "User"]]
+    har_dataset = har_dataset[['x-axis', 'y-axis', 'z-axis', "gt", "User"]]
     har_dataset.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
     har_users = har_dataset["user-id"].unique()
 
@@ -161,7 +161,7 @@ def process_hhar_all_files(data_folder_path):
     gyro_data = pd.concat([har_phone_gyro, har_watch_gyro])
 
     acc_data.dropna(how="any", inplace=True)
-    acc_data = acc_data[["x", "y", "z", "gt", "User", "Device"]]
+    acc_data = acc_data[['x-axis', 'y-axis', 'z-axis', "gt", "User", "Device"]]
     acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     har_users = acc_data["user-id"].unique()
 
@@ -175,7 +175,7 @@ def process_hhar_all_files(data_folder_path):
         acc_datasets[user] = [(data, labels)]
 
     gyro_data.dropna(how="any", inplace=True)
-    gyro_data = gyro_data[["x", "y", "z", "gt", "User", "Device"]]
+    gyro_data = gyro_data[['x-axis', 'y-axis', 'z-axis', "gt", "User", "Device"]]
     gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     gyro_datasets = {}
     for user in har_users:
@@ -216,7 +216,6 @@ def process_PAMAP2_all_data(data_folder_path):
     
     user_df = pd.concat(combined_data, ignore_index=True)
     user_df.drop(user_df[user_df[1] == 0].index, inplace=True)
-
     hand_acc_data = user_df.loc[:, [4, 5, 6, 1, 'User-ID']]
     hand_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
     hand_acc_data['device'] = "IMU hand acc"
@@ -333,7 +332,7 @@ def process_motion_sense_all_files(data_folder_path):
                 if user_id_match is not None:
                     user_id = int(user_id_match.group('user_id'))
                     user_trial_dataset = pd.read_csv(trial_user_file)
-                    table = user_trial_dataset[["x", "y", "z"]]
+                    table = user_trial_dataset[['x-axis', 'y-axis', 'z-axis']]
                     table['device'] = label
                     table['User-ID'] = str(user_id)
                     df = pd.concat([df, table])
@@ -344,7 +343,7 @@ def process_motion_sense_all_files(data_folder_path):
         ms_users = df['User-ID'].unique()
         for user in ms_users:
             user_extract = df[df['User-ID'] == user]
-            data = user_extract[["x", "y", "z"]].copy()
+            data = user_extract[['x-axis', 'y-axis', 'z-axis']].copy()
             labels = user_extract['device']
             sensor_datasets[user] = [(data, labels)]
 
@@ -356,7 +355,7 @@ def process_motion_sense_all_files(data_folder_path):
     ms_users = all_data['User-ID'].unique()
     for user in ms_users:
         user_extract = all_data[all_data['User-ID'] == user]
-        data = user_extract[["x", "y", "z"]].copy()
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']].copy()
         labels = user_extract['device']
         sensor_datasets[user] = [(data, labels)]
     user_datasets.update({'all': sensor_datasets})
@@ -505,7 +504,7 @@ def process_hhar_all_har_files(data_folder_path):
     gyro_data = pd.concat([har_phone_gyro, har_watch_gyro])
 
     acc_data.dropna(how="any", inplace=True)
-    acc_data = acc_data[["x", "y", "z", "gt", "User", "Device"]]
+    acc_data = acc_data[['x-axis', 'y-axis', 'z-axis', "gt", "User", "Device"]]
     acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     har_users = acc_data["user-id"].unique()
 
@@ -519,7 +518,7 @@ def process_hhar_all_har_files(data_folder_path):
         acc_datasets[user] = [(data, labels)]
 
     gyro_data.dropna(how="any", inplace=True)
-    gyro_data = gyro_data[["x", "y", "z", "gt", "User", "Device"]]
+    gyro_data = gyro_data[['x-axis', 'y-axis', 'z-axis', "gt", "User", "Device"]]
     gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     gyro_datasets = {}
     for user in har_users:
@@ -568,7 +567,7 @@ def process_motion_sense_all_har_files(data_folder_path):
                 if user_id_match is not None:
                     user_id = int(user_id_match.group('user_id'))
                     user_trial_dataset = pd.read_csv(trial_user_file)
-                    table = user_trial_dataset[["x", "y", "z"]]
+                    table = user_trial_dataset[['x-axis', 'y-axis', 'z-axis']]
                     table['activity'] = label
                     table['User-ID'] = str(user_id)
                     df = pd.concat([df, table])
@@ -579,7 +578,7 @@ def process_motion_sense_all_har_files(data_folder_path):
         ms_users = df['User-ID'].unique()
         for user in ms_users:
             user_extract = df[df['User-ID'] == user]
-            data = user_extract[["x", "y", "z"]].copy()
+            data = user_extract[['x-axis', 'y-axis', 'z-axis']].copy()
             labels = user_extract['activity']
             sensor_datasets[user] = [(data, labels)]
         if(folder[46:49] == "Acc"):
@@ -591,7 +590,7 @@ def process_motion_sense_all_har_files(data_folder_path):
     ms_users = all_data['User-ID'].unique()
     for user in ms_users:
         user_extract = all_data[all_data['User-ID'] == user]
-        data = user_extract[["x", "y", "z"]].copy()
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']].copy()
         labels = user_extract['activity']
         sensor_datasets[user] = [(data, labels)]
     user_datasets.update({'all': sensor_datasets})
@@ -621,21 +620,20 @@ def process_HARTH_thigh_acc_har_data(data_folder_path):
         140: "cycling (stand, inactive)"
     }
     df['label'].replace(activity_map, inplace=True)
-    back_data = df.loc[:, ['User-ID', 'thigh_x', 'thigh_y', 'thigh_z', 'label']]
+    back_data = df.loc[:, ['User-ID', 'x-axis', 'y-axis', 'z-axis', 'label']]
     harth_user = back_data["User-ID"].unique()
 
 
     user_datasets = {}
     for user in harth_user:
         user_extract = back_data[back_data['User-ID'] == user]
-        data = user_extract[['thigh_x', 'thigh_y', 'thigh_z']].values
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']].values
         labels = user_extract["label"].values
         print(f"{user} {data.shape}")
         user_datasets[user] = [(data, labels)]
     userdataset = {"acc": user_datasets,
                     "all": user_datasets}
     return userdataset
-
 
 def process_HARTH_back_acc_har_data(data_folder_path):
     combined_data = []
@@ -660,14 +658,14 @@ def process_HARTH_back_acc_har_data(data_folder_path):
         140: "cycling (stand, inactive)"
     }
     df['label'].replace(activity_map, inplace=True)
-    back_data = df.loc[:, ['User-ID', 'back_x', 'back_y', 'back_z', 'label']]
+    back_data = df.loc[:, ['User-ID', 'x-axis', 'y-axis', 'z-axis' 'label']]
     harth_user = back_data["User-ID"].unique()
 
 
     user_datasets = {}
     for user in harth_user:
         user_extract = back_data[back_data['User-ID'] == user]
-        data = user_extract[['back_x', 'back_y', 'back_z']].values
+        data = user_extract[[ 'x-axis', 'y-axis', 'z-axis']].values
         labels = user_extract["label"].values
         print(f"{user} {data.shape}")
         user_datasets[user] = [(data, labels)]
@@ -675,7 +673,7 @@ def process_HARTH_back_acc_har_data(data_folder_path):
                     "all": user_datasets}
     return userdataset
 
-def process_HARTH_all_acc_data(data_folder_path):
+def process_HARTH_all_har_data_standardised(data_folder_path):
     combined_data = []
     for filename in os.listdir(data_folder_path):
             file_path = os.path.join(data_folder_path, filename)
@@ -683,18 +681,60 @@ def process_HARTH_all_acc_data(data_folder_path):
             df["User-ID"] = filename[1:4]
             combined_data.append(df)
     df = pd.concat(combined_data)
-    back_df = df.loc[:, ['User-ID', 'back_x', 'back_y', 'back_z']]
-    back_df.columns = ['User-ID', 'x', 'y', 'z']
-    back_df['device'] = "back_acc"
-    thigh_df = df.loc[:, ['User-ID', 'thigh_x', 'thigh_y', 'thigh_z']]
-    thigh_df.columns = ['User-ID', 'x', 'y', 'z']
-    thigh_df['device'] = "thigh_acc"
+    back_df = df.loc[:, ['User-ID',  'back_x', 'back_y', 'back_z', 'label']]
+    back_df.columns = ['User-ID', 'x-axis', 'y-axis', 'z-axis', 'label']
+    thigh_df = df.loc[:, ['User-ID',  'thigh_x', 'thigh_y', 'thigh_z', 'label']]
+    thigh_df.columns = ['User-ID', 'x-axis', 'y-axis', 'z-axis', 'label']
     df = pd.concat([back_df, thigh_df])
+    activity_map = {
+    1: "walking",
+    2: "running",
+    3: "shuffling",
+    4: "stairs (ascending)",
+    5: "stairs (descending)",
+    6: "standing",
+    7: "sitting",
+    8: "lying",
+    13: "cycling (sit)",
+    14: "cycling (stand)",
+    130: "cycling (sit, inactive)",
+    140: "cycling (stand, inactive)"
+    }
+    df['label'].replace(activity_map, inplace=True)
+    df = normalize_sampling_rate(df, '20L')
     harth_user = df['User-ID'].unique()
     datasets = {}
     for user in harth_user:
         user_extract = df[df['User-ID'] == user]
-        data = user_extract[['x', 'y', 'z']]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["label"]
+        print(f"{user} {data.shape}")
+        datasets[user] = [(data, labels)]
+    userdataset = {"acc": datasets,
+                    "all": datasets}
+    return userdataset
+
+def process_HARTH_all_acc_data_standardised(data_folder_path):
+    combined_data = []
+    for filename in os.listdir(data_folder_path):
+            file_path = os.path.join(data_folder_path, filename)
+            df = pd.read_csv(file_path, sep=',', header=0, na_filter="NaN")
+            df["User-ID"] = filename[1:4]
+            combined_data.append(df)
+    df = pd.concat(combined_data)
+    back_df = df.loc[:, ['User-ID',  'back_x', 'back_y', 'back_z']]
+    back_df.columns = ['User-ID', 'x-axis', 'y-axis', 'z-axis']
+    back_df['device'] = "back_acc"
+    thigh_df = df.loc[:, ['User-ID',  'thigh_x', 'thigh_y', 'thigh_z']]
+    thigh_df.columns = ['User-ID', 'x-axis', 'y-axis', 'z-axis']
+    thigh_df['device'] = "thigh_acc"
+    df = pd.concat([back_df, thigh_df])
+    df = normalize_sampling_rate(df, '20L')
+    harth_user = df['User-ID'].unique()
+    datasets = {}
+    for user in harth_user:
+        user_extract = df[df['User-ID'] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
         labels = user_extract["device"]
         print(f"{user} {data.shape}")
         datasets[user] = [(data, labels)]
@@ -702,6 +742,287 @@ def process_HARTH_all_acc_data(data_folder_path):
                     "all": datasets}
     return userdataset
     
+def process_dasa_all_data_standardised(data_folder_path):
+    user_datasets = {}
+    all_activity_folders = sorted(glob.glob(data_folder_path + "/*"))
+    df = pd.DataFrame()
+    for folder in all_activity_folders:
+        # print(folder[32:])
+        all_user_folders = sorted(glob.glob(folder + "/*"))
+        
+
+        for user_folder in all_user_folders:
+            # print(user_folder[37:])
+            user_id = user_folder[37:]
+            user_segments = sorted(glob.glob(user_folder + "/*"))
+            segment_data = []
+            for segments in user_segments:
+                temp = pd.read_csv(segments, header=None)
+                temp['user-id'] = user_id
+                temp['activity'] = folder[32:]
+                segment_data.append(temp)
+            df = pd.concat([df, temp], axis=0)
+    torso_acc_data = df.loc[:, [0, 1, 2, 'activity', 'user-id']]
+    torso_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    torso_acc_data['device'] = 'torso acc'
+
+    torso_gyro_data = df.loc[:, [3, 4, 5, 'activity', 'user-id']]
+    torso_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    torso_gyro_data['device'] = 'torso gyro'
+
+    torso_mag_data = df.loc[:, [6, 7, 8, 'activity', 'user-id']]
+    torso_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    torso_mag_data['device'] = 'torso mag'
+
+    ra_acc_data = df.loc[:, [9, 10, 11, 'activity', 'user-id']]
+    ra_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ra_acc_data['device'] = 'right arm acc'
+
+    ra_gyro_data = df.loc[:, [12, 13, 14, 'activity', 'user-id']]
+    ra_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ra_gyro_data['device'] = 'right arm gyro'
+
+    ra_mag_data = df.loc[:, [15, 16, 17, 'activity', 'user-id']]
+    ra_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ra_mag_data['device'] = 'right arm mag'
+
+    la_acc_data = df.loc[:, [18, 19, 20, 'activity', 'user-id']]
+    la_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    la_acc_data['device'] = 'left arm acc'
+
+    la_gyro_data = df.loc[:, [21, 22, 23, 'activity', 'user-id']]
+    la_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    la_gyro_data['device'] = 'left arm gyro'
+
+    la_mag_data = df.loc[:, [24, 25, 26, 'activity', 'user-id']]
+    la_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    la_mag_data['device'] = 'left arm mag'
+
+    rl_acc_data = df.loc[:, [27, 28, 29, 'activity', 'user-id']]
+    rl_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    rl_acc_data['device'] = 'right leg acc'
+
+    rl_gyro_data = df.loc[:, [30, 31, 32, 'activity', 'user-id']]
+    rl_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    rl_gyro_data['device'] = 'right leg gyro'
+
+    rl_mag_data = df.loc[:, [33, 34, 35, 'activity', 'user-id']]
+    rl_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    rl_mag_data['device'] = 'right leg mag'
+
+    ll_acc_data = df.loc[:, [36, 37, 38, 'activity', 'user-id']]
+    ll_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ll_acc_data['device'] = 'left leg acc'
+
+    ll_gyro_data = df.loc[:, [39, 40, 41, 'activity', 'user-id']]
+    ll_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ll_gyro_data['device'] = 'left leg gyro'
+
+    ll_mag_data = df.loc[:, [42, 43, 44, 'activity', 'user-id']]
+    ll_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ll_mag_data['device'] = 'left leg mag'
+
+    all_users = df['user-id'].unique()
+    acc_data = pd.concat([torso_acc_data, rl_acc_data, ll_acc_data, ra_acc_data, rl_acc_data], ignore_index=True)
+    acc_data = normalize_sampling_rate(acc_data, '40L')
+    acc_datasets = {}
+    for user in all_users:
+        user_extract = acc_data[acc_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
+        labels = user_extract["device"].values
+        print(f"{user} {data.shape}")
+        acc_datasets[user] = [(data, labels)]
+    print('done acc')
+    gyro_data = pd.concat([torso_gyro_data, rl_gyro_data, ll_gyro_data, ra_gyro_data, rl_gyro_data],  ignore_index=True)
+    gyro_data = normalize_sampling_rate(gyro_data, '40L')
+    gyro_datasets = {}
+    for user in all_users:
+        user_extract = gyro_data[gyro_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
+        labels = user_extract["device"].values
+        print(f"{user} {data.shape}")
+        gyro_datasets[user] = [(data, labels)]
+
+    mag_data = pd.concat([torso_mag_data, rl_mag_data, ll_mag_data, ra_mag_data, rl_mag_data],  ignore_index=True)
+    mag_data = normalize_sampling_rate(mag_data, '40L')
+    mag_datasets = {}
+    for user in all_users:
+        user_extract = mag_data[mag_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
+        labels = user_extract["device"].values
+        print(f"{user} {data.shape}")
+        mag_datasets[user] = [(data, labels)]
+
+    all_data = pd.concat([acc_data, gyro_data, mag_data])
+    all_datasets = {}
+    for user in all_users:
+        user_extract = all_data[all_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
+        labels = user_extract["device"].values
+        print(f"{user} {data.shape}")
+        all_datasets[user] = [(data, labels)]
+
+    user_datasets = {
+        'acc': acc_datasets, 
+        'gyro': gyro_datasets, 
+        'mag': mag_datasets,
+        'all': all_datasets
+    }
+
+    return user_datasets
+
+def process_dasa_all_har_data_standardised(data_folder_path):
+    user_datasets = {}
+    all_activity_folders = sorted(glob.glob(data_folder_path + "/*"))
+    df = pd.DataFrame()
+    for folder in all_activity_folders:
+        # print(folder[32:])
+        all_user_folders = sorted(glob.glob(folder + "/*"))
+        
+
+        for user_folder in all_user_folders:
+            # print(user_folder[37:])
+            user_id = user_folder[37:]
+            user_segments = sorted(glob.glob(user_folder + "/*"))
+            segment_data = []
+            for segments in user_segments:
+                temp = pd.read_csv(segments, header=None)
+                temp['user-id'] = user_id
+                temp['activity'] = folder[32:]
+                segment_data.append(temp)
+            df = pd.concat([df, temp], axis=0)
+    activity_map = {
+        "a01": "sitting",
+        "a02": "standing",
+        "a03": "lying on back",
+        "a04": "lying on right side",
+        "a05": "ascending stairs",
+        "a06": "descending stairs",
+        "a07": "standing in still elevator",
+        "a08": "moving around in elevator",
+        "a09": "walking in parking lot",
+        "a10": "walking on treadmill (flat)",
+        "a11": "walking on treadmill (15 deg inclined)",
+        "a12": "running on treadmill (8 km/h)",
+        "a13": "exercising on stepper",
+        "a14": "exercising on cross trainer",
+        "a15": "cycling on exercise bike (horizontal)",
+        "a16": "cycling on exercise bike (vertical)",
+        "a17": "rowing",
+        "a18": "jumping",
+        "a19": "playing basketball"
+    }
+    df['activity'].replace(activity_map, inplace=True)
+    torso_acc_data = df.loc[:, [0, 1, 2, 'activity', 'user-id']]
+    torso_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    torso_acc_data['device'] = 'torso acc'
+
+    torso_gyro_data = df.loc[:, [3, 4, 5, 'activity', 'user-id']]
+    torso_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    torso_gyro_data['device'] = 'torso gyro'
+
+    torso_mag_data = df.loc[:, [6, 7, 8, 'activity', 'user-id']]
+    torso_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    torso_mag_data['device'] = 'torso mag'
+
+    ra_acc_data = df.loc[:, [9, 10, 11, 'activity', 'user-id']]
+    ra_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ra_acc_data['device'] = 'right arm acc'
+
+    ra_gyro_data = df.loc[:, [12, 13, 14, 'activity', 'user-id']]
+    ra_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ra_gyro_data['device'] = 'right arm gyro'
+
+    ra_mag_data = df.loc[:, [15, 16, 17, 'activity', 'user-id']]
+    ra_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ra_mag_data['device'] = 'right arm mag'
+
+    la_acc_data = df.loc[:, [18, 19, 20, 'activity', 'user-id']]
+    la_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    la_acc_data['device'] = 'left arm acc'
+
+    la_gyro_data = df.loc[:, [21, 22, 23, 'activity', 'user-id']]
+    la_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    la_gyro_data['device'] = 'left arm gyro'
+
+    la_mag_data = df.loc[:, [24, 25, 26, 'activity', 'user-id']]
+    la_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    la_mag_data['device'] = 'left arm mag'
+
+    rl_acc_data = df.loc[:, [27, 28, 29, 'activity', 'user-id']]
+    rl_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    rl_acc_data['device'] = 'right leg acc'
+
+    rl_gyro_data = df.loc[:, [30, 31, 32, 'activity', 'user-id']]
+    rl_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    rl_gyro_data['device'] = 'right leg gyro'
+
+    rl_mag_data = df.loc[:, [33, 34, 35, 'activity', 'user-id']]
+    rl_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    rl_mag_data['device'] = 'right leg mag'
+
+    ll_acc_data = df.loc[:, [36, 37, 38, 'activity', 'user-id']]
+    ll_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ll_acc_data['device'] = 'left leg acc'
+
+    ll_gyro_data = df.loc[:, [39, 40, 41, 'activity', 'user-id']]
+    ll_gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ll_gyro_data['device'] = 'left leg gyro'
+
+    ll_mag_data = df.loc[:, [42, 43, 44, 'activity', 'user-id']]
+    ll_mag_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
+    ll_mag_data['device'] = 'left leg mag'
+
+    all_users = df['user-id'].unique()
+    acc_data = pd.concat([torso_acc_data, rl_acc_data, ll_acc_data, ra_acc_data, rl_acc_data], ignore_index=True)
+    acc_data = normalize_sampling_rate(acc_data, '40L')
+    acc_datasets = {}
+    for user in all_users:
+        user_extract = acc_data[acc_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
+        labels = user_extract["activity"].values
+        print(f"{user} {data.shape}")
+        acc_datasets[user] = [(data, labels)]
+
+    gyro_data = pd.concat([torso_gyro_data, rl_gyro_data, ll_gyro_data, ra_gyro_data, rl_gyro_data],  ignore_index=True)
+    gyro_data = normalize_sampling_rate(gyro_data, '40L')
+
+    gyro_datasets = {}
+    for user in all_users:
+        user_extract = gyro_data[gyro_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
+        labels = user_extract["activity"].values
+        print(f"{user} {data.shape}")
+        gyro_datasets[user] = [(data, labels)]
+
+    mag_data = pd.concat([torso_mag_data, rl_mag_data, ll_mag_data, ra_mag_data, rl_mag_data],  ignore_index=True)
+    mag_data = normalize_sampling_rate(mag_data, '40L')
+    mag_datasets = {}
+    for user in all_users:
+        user_extract = mag_data[mag_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
+        labels = user_extract["activity"].values
+        print(f"{user} {data.shape}")
+        mag_datasets[user] = [(data, labels)]
+
+    all_data = pd.concat([acc_data, gyro_data, mag_data])
+    all_datasets = {}
+    for user in all_users:
+        user_extract = all_data[all_data["user-id"] == user]
+        data = user_extract[["x-axis", "y-axis", "z-axis"]]
+        labels = user_extract["activity"].values
+        print(f"{user} {data.shape}")
+        all_datasets[user] = [(data, labels)]
+
+    user_datasets = {
+        'acc': acc_datasets, 
+        'gyro': gyro_datasets, 
+        'mag': mag_datasets,
+        'all': all_datasets
+    }
+
+    return user_datasets
+
 def process_dasa_all_data(data_folder_path):
     user_datasets = {}
     all_activity_folders = sorted(glob.glob(data_folder_path + "/*"))
@@ -849,6 +1170,28 @@ def process_dasa_all_har_data(data_folder_path):
                 temp['activity'] = folder[32:]
                 segment_data.append(temp)
             df = pd.concat([df, temp], axis=0)
+    # activity_map = {
+    #     "a01": "sitting",
+    #     "a02": "standing",
+    #     "a03": "lying on back",
+    #     "a04": "lying on right side",
+    #     "a05": "ascending stairs",
+    #     "a06": "descending stairs",
+    #     "a07": "standing in still elevator",
+    #     "a08": "moving around in elevator",
+    #     "a09": "walking in parking lot",
+    #     "a10": "walking on treadmill (flat)",
+    #     "a11": "walking on treadmill (15 deg inclined)",
+    #     "a12": "running on treadmill (8 km/h)",
+    #     "a13": "exercising on stepper",
+    #     "a14": "exercising on cross trainer",
+    #     "a15": "cycling on exercise bike (horizontal)",
+    #     "a16": "cycling on exercise bike (vertical)",
+    #     "a17": "rowing",
+    #     "a18": "jumping",
+    #     "a19": "playing basketball"
+    # }
+    # df['activity'].replace(activity_map, inplace=True)
     torso_acc_data = df.loc[:, [0, 1, 2, 'activity', 'user-id']]
     torso_acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id"]
     torso_acc_data['device'] = 'torso acc'
@@ -954,7 +1297,6 @@ def process_dasa_all_har_data(data_folder_path):
     }
 
     return user_datasets
-
 
 def process_WISDM_all_har_data(data_folder_path):
     map = {
@@ -1094,6 +1436,150 @@ def process_WISDM_all_data(data_folder_path):
         }
     return user_dataset
 
+def process_WISDM_all_har_data_standardised(data_folder_path):
+    map = {
+        'A': 'walking',
+        'B': 'jogging',
+        'C': 'stairs',
+        'D': 'sitting',
+        'E': 'standing',
+        'F': 'typing',
+        'G': 'teeth',
+        'H': 'soup',
+        'I': 'chips',
+        'J': 'pasta',
+        'K': 'drinking',
+        'L': 'sandwich',
+        'M': 'kicking',
+        'O': 'catch',
+        'P': 'dribbling',
+        'Q': 'writing',
+        'R': 'clapping',
+        'S': 'folding'
+    }
+
+    all_device_folders = sorted(glob.glob(data_folder_path + "/*"))
+    all_data = []
+    acc_data = []
+    gyro_data = []
+    for folder in all_device_folders:
+        device = os.path.split(folder)[-1]
+        all_sensor_folders = sorted(glob.glob(folder + "/*"))
+        for sensor_folder in all_sensor_folders:
+            sensor = os.path.split(sensor_folder)[-1]
+            label = device + " " + sensor
+            print(label)
+            for trial_user_file in sorted(glob.glob(sensor_folder + "/*.txt")):
+                df = pd.read_csv(trial_user_file, header=None)
+                df[1].replace(map, inplace=True)
+                df = df[[0, 1, 3, 4, 5]]
+                df.columns = ['user-id', 'activity', 'x-axis', 'y-axis', 'z-axis']
+                df['z-axis'].replace({';': ''}, regex=True, inplace=True)
+                df['z-axis']=pd.to_numeric(df['z-axis'],errors='coerce')
+                df = df.astype({'user-id': 'string'})
+                df['device'] = label
+                all_data.append(df)
+                if sensor == 'accel':
+                    acc_data.append(df)
+                elif sensor == 'gyro':
+                    gyro_data.append(df)
+    all_df = pd.concat(all_data)
+    acc_df = pd.concat(acc_data)
+    gyro_df = pd.concat(gyro_data)
+    all_df = normalize_sampling_rate(all_df, '50L')
+    acc_df = normalize_sampling_rate(acc_df,  '50L')
+    gyro_df = normalize_sampling_rate(gyro_df,  '50L')
+
+    all_users = all_df['user-id'].unique()
+    acc_dataset = {}
+    for user in all_users:
+        user_extract = acc_df[acc_df["user-id"] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["activity"]
+        acc_dataset[user] = [(data, labels)]
+
+    gyro_dataset = {}
+    for user in all_users:
+        user_extract = gyro_df[gyro_df["user-id"] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["activity"]
+        gyro_dataset[user] = [(data, labels)]
+
+    all_dataset = {}
+    for user in all_users:
+        user_extract = all_df[all_df["user-id"] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["activity"]
+        all_dataset[user] = [(data, labels)]
+
+    user_dataset = {
+        'acc': acc_dataset, 
+        'gyro': gyro_dataset,
+        'all': all_dataset
+        }
+    return user_dataset
+
+def process_WISDM_all_data_standardised(data_folder_path):
+    all_device_folders = sorted(glob.glob(data_folder_path + "/*"))
+    all_data = []
+    acc_data = []
+    gyro_data = []
+    for folder in all_device_folders:
+        device = os.path.split(folder)[-1]
+        all_sensor_folders = sorted(glob.glob(folder + "/*"))
+        for sensor_folder in all_sensor_folders:
+            sensor = os.path.split(sensor_folder)[-1]
+            label = device + " " + sensor
+            print(label)
+            for trial_user_file in sorted(glob.glob(sensor_folder + "/*.txt")):
+                df = pd.read_csv(trial_user_file, header=None)
+                df = df[[0, 1, 3, 4, 5]]
+                df.columns = ['user-id', 'activity', 'x-axis', 'y-axis', 'z-axis']
+                df = df.astype({'user-id': 'string'})
+                df['z-axis'].replace({';': ''}, regex=True, inplace=True)
+                df['z-axis']=pd.to_numeric(df['z-axis'],errors='coerce')
+                df['device'] = label
+                all_data.append(df)
+                if sensor == 'accel':
+                    acc_data.append(df)
+                elif sensor == 'gyro':
+                    gyro_data.append(df)
+    all_df = pd.concat(all_data)
+    acc_df = pd.concat(acc_data)
+    gyro_df = pd.concat(gyro_data)
+    all_df = normalize_sampling_rate(all_df, '50L')
+    acc_df = normalize_sampling_rate(acc_df,  '50L')
+    gyro_df = normalize_sampling_rate(gyro_df,  '50L')
+
+    all_users = all_df['user-id'].unique()
+    acc_dataset = {}
+    for user in all_users:
+        user_extract = acc_df[acc_df["user-id"] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["device"]
+        acc_dataset[user] = [(data, labels)]
+
+    gyro_dataset = {}
+    for user in all_users:
+        user_extract = gyro_df[gyro_df["user-id"] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["device"]
+        gyro_dataset[user] = [(data, labels)]
+
+    all_dataset = {}
+    for user in all_users:
+        user_extract = all_df[all_df["user-id"] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract["device"]
+        all_dataset[user] = [(data, labels)]
+
+    user_dataset = {
+        'acc': acc_dataset, 
+        'gyro': gyro_dataset,
+        'all': all_dataset
+        }
+    return user_dataset
+
 
 def store_pickle(dataset, filename):
     with open(filename+'.pickle', 'wb') as file:
@@ -1103,3 +1589,22 @@ def store_pickle(dataset, filename):
 def open_pickle(filename):
     with open(filename, 'rb') as file:
         return pickle.load(file)
+    
+def normalize_sampling_rate(data, oroginal_sr, target_sr='20L'):
+    df = data.copy(deep=True)
+    df.reset_index(inplace=True, drop=True)
+
+    # Create a dummy timestamp column
+    df['timestamp'] = pd.date_range(start='2023-01-01', periods=len(df), freq=oroginal_sr)
+
+    # Set the 'user-id', 'activity', and 'timestamp' columns as the index
+    df.set_index('timestamp', inplace=True)
+
+    resampled_df = df.resample(target_sr).asfreq()
+    resampled_df['x-axis'] = resampled_df['x-axis'].interpolate('linear', limit=2)
+    resampled_df['y-axis'] = resampled_df['y-axis'].interpolate('linear')
+    resampled_df['z-axis'] = resampled_df['z-axis'].interpolate('linear')
+    resampled_df.reset_index(inplace=True, drop=True)
+    resampled_df = resampled_df.ffill()
+
+    return resampled_df
