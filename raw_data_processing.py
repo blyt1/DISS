@@ -99,7 +99,7 @@ def process_motion_sense_accelerometer_files(accelerometer_data_folder_path):
                 # user_trial_dataset.dropna(how="any", inplace=True)
 
                 # Extract the x, y, z channels
-                values = user_trial_dataset[['x-axis', 'y-axis', 'z-axis']].values
+                values = user_trial_dataset[['x', 'y', 'z']].values
 
                 # the label is the same during the entire trial, so it is repeated here to pad to the same length as the values
                 labels = np.repeat(label, values.shape[0])
@@ -328,7 +328,7 @@ def process_motion_sense_all_files(data_folder_path):
                 if user_id_match is not None:
                     user_id = int(user_id_match.group('user_id'))
                     user_trial_dataset = pd.read_csv(trial_user_file)
-                    table = user_trial_dataset[['x-axis', 'y-axis', 'z-axis']]
+                    table = user_trial_dataset[['x', 'y', 'z']]
                     table['device'] = label
                     table['User-ID'] = str(user_id)
                     df = pd.concat([df, table])
@@ -339,7 +339,7 @@ def process_motion_sense_all_files(data_folder_path):
         ms_users = df['User-ID'].unique()
         for user in ms_users:
             user_extract = df[df['User-ID'] == user]
-            data = user_extract[['x-axis', 'y-axis', 'z-axis']].copy()
+            data = user_extract[['x', 'y', 'z']].copy()
             labels = user_extract['device']
             sensor_datasets[user] = [(data, labels)]
 
@@ -351,7 +351,7 @@ def process_motion_sense_all_files(data_folder_path):
     ms_users = all_data['User-ID'].unique()
     for user in ms_users:
         user_extract = all_data[all_data['User-ID'] == user]
-        data = user_extract[['x-axis', 'y-axis', 'z-axis']].copy()
+        data = user_extract[['x', 'y', 'z']].copy()
         labels = user_extract['device']
         sensor_datasets[user] = [(data, labels)]
     user_datasets.update({'all': sensor_datasets})
@@ -500,7 +500,7 @@ def process_hhar_all_har_files(data_folder_path):
     gyro_data = pd.concat([har_phone_gyro, har_watch_gyro])
 
     acc_data.dropna(how="any", inplace=True)
-    acc_data = acc_data[['x-axis', 'y-axis', 'z-axis', "gt", "User", "Device"]]
+    acc_data = acc_data[['x', 'y', 'z', "gt", "User", "Device"]]
     acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     har_users = acc_data["user-id"].unique()
 
@@ -514,7 +514,7 @@ def process_hhar_all_har_files(data_folder_path):
         acc_datasets[user] = [(data, labels)]
 
     gyro_data.dropna(how="any", inplace=True)
-    gyro_data = gyro_data[['x-axis', 'y-axis', 'z-axis', "gt", "User", "Device"]]
+    gyro_data = gyro_data[['x', 'y', 'z', "gt", "User", "Device"]]
     gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     gyro_datasets = {}
     for user in har_users:
@@ -563,7 +563,7 @@ def process_motion_sense_all_har_files(data_folder_path):
                 if user_id_match is not None:
                     user_id = int(user_id_match.group('user_id'))
                     user_trial_dataset = pd.read_csv(trial_user_file)
-                    table = user_trial_dataset[['x-axis', 'y-axis', 'z-axis']]
+                    table = user_trial_dataset[['x', 'y', 'z']]
                     table['activity'] = label
                     table['User-ID'] = str(user_id)
                     df = pd.concat([df, table])
@@ -574,7 +574,7 @@ def process_motion_sense_all_har_files(data_folder_path):
         ms_users = df['User-ID'].unique()
         for user in ms_users:
             user_extract = df[df['User-ID'] == user]
-            data = user_extract[['x-axis', 'y-axis', 'z-axis']].copy()
+            data = user_extract[['x', 'y', 'z']].copy()
             labels = user_extract['activity']
             sensor_datasets[user] = [(data, labels)]
         if(folder[46:49] == "Acc"):
@@ -586,7 +586,7 @@ def process_motion_sense_all_har_files(data_folder_path):
     ms_users = all_data['User-ID'].unique()
     for user in ms_users:
         user_extract = all_data[all_data['User-ID'] == user]
-        data = user_extract[['x-axis', 'y-axis', 'z-axis']].copy()
+        data = user_extract[['x', 'y', 'z']].copy()
         labels = user_extract['activity']
         sensor_datasets[user] = [(data, labels)]
     user_datasets.update({'all': sensor_datasets})
