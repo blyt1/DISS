@@ -150,18 +150,14 @@ def process_hhar_all_files(data_folder_path):
         user_datasets (a list containing data collected from the acc + gyro from both smartphones and watches)
     """
     har_phone_acc = pd.read_csv(os.path.join(data_folder_path, 'Phones_accelerometer.csv'))
-    har_phone_acc['Device'] = "Phone acc"
     har_phone_gyro = pd.read_csv(os.path.join(data_folder_path, 'Phones_gyroscope.csv'))
-    har_phone_gyro['Device'] = "Phone gyro"
     har_watch_acc = pd.read_csv(os.path.join(data_folder_path, 'Watch_accelerometer.csv'))
-    har_watch_acc['Device'] = "Watch acc"
     har_watch_gyro = pd.read_csv(os.path.join(data_folder_path, 'Watch_gyroscope.csv'))
-    har_watch_gyro['Device'] = "Watch gyro"
     acc_data = pd.concat([har_phone_acc, har_watch_acc])
     gyro_data = pd.concat([har_phone_gyro, har_watch_gyro])
 
     acc_data.dropna(how="any", inplace=True)
-    acc_data = acc_data[['x-axis', 'y-axis', 'z-axis', "gt", "User", "Device"]]
+    acc_data = acc_data[['x', 'y', 'z', "gt", "User", "Device"]]
     acc_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     har_users = acc_data["user-id"].unique()
 
@@ -175,7 +171,7 @@ def process_hhar_all_files(data_folder_path):
         acc_datasets[user] = [(data, labels)]
 
     gyro_data.dropna(how="any", inplace=True)
-    gyro_data = gyro_data[['x-axis', 'y-axis', 'z-axis', "gt", "User", "Device"]]
+    gyro_data = gyro_data[['x', 'y', 'z', "gt", "User", "Device"]]
     gyro_data.columns = ["x-axis", "y-axis", "z-axis", "activity", "user-id", "device"]
     gyro_datasets = {}
     for user in har_users:
