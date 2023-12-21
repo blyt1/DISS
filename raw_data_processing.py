@@ -669,7 +669,7 @@ def process_HARTH_back_acc_har_data(data_folder_path):
                     "all": user_datasets}
     return userdataset
 
-def process_HARTH_all_har_data_standardised(data_folder_path):
+def process_HARTH_all_har_data(data_folder_path):
     combined_data = []
     for filename in os.listdir(data_folder_path):
             file_path = os.path.join(data_folder_path, filename)
@@ -697,7 +697,6 @@ def process_HARTH_all_har_data_standardised(data_folder_path):
     140: "cycling (stand, inactive)"
     }
     df['label'].replace(activity_map, inplace=True)
-    df = normalize_sampling_rate(df, '20L')
     harth_user = df['User-ID'].unique()
     datasets = {}
     for user in harth_user:
@@ -710,7 +709,7 @@ def process_HARTH_all_har_data_standardised(data_folder_path):
                     "all": datasets}
     return userdataset
 
-def process_HARTH_all_acc_data_standardised(data_folder_path):
+def process_HARTH_all_acc_data(data_folder_path):
     combined_data = []
     for filename in os.listdir(data_folder_path):
             file_path = os.path.join(data_folder_path, filename)
@@ -725,7 +724,6 @@ def process_HARTH_all_acc_data_standardised(data_folder_path):
     thigh_df.columns = ['User-ID', 'x-axis', 'y-axis', 'z-axis']
     thigh_df['device'] = "thigh_acc"
     df = pd.concat([back_df, thigh_df])
-    df = normalize_sampling_rate(df, '20L')
     harth_user = df['User-ID'].unique()
     datasets = {}
     for user in harth_user:
