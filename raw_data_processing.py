@@ -1574,6 +1574,29 @@ def process_WISDM_all_data_standardised(data_folder_path):
         }
     return user_dataset
 
+def process_WISDM_v1_HAR(data_folder_path):
+    """
+    This is the WISDM that SelfHAR uses
+    """
+    columns = ['user-id','activity','timestamp', 'x-axis', 'y-axis', 'z-axis']
+    
+    df = pd.read_csv(os.path.join(data_folder_path, 'WISDM_ar_v1.1_raw.txt'), header = None, names = columns, on_bad_lines='skip')
+    df['z-axis'] = df['z-axis'].map(lambda x: str(re.findall("\d+\.\d+", str(x))))
+    df['z-axis'] = df['z-axis'].map(lambda x: x[2:-2])
+    df['z-axis'] = pd.to_numeric(df['z-axis'],errors='coerce')
+    all_users = df['user-id'].unique()
+    acc_dataset = {}
+    for user in all_users:
+        user_extract = df[df['user-id'] == user]
+        data = user_extract[['x-axis', 'y-axis', 'z-axis']]
+        labels = user_extract['activity']
+        acc_dataset[user] = [(data, labels)]
+    
+    return {
+        'acc': acc_dataset, 
+        'all': acc_dataset
+    }
+
 
 def store_pickle(dataset, filename):
     with open(filename+'.pickle', 'wb') as file:
