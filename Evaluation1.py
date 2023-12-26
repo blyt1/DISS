@@ -44,9 +44,12 @@ def train_self_supervised_model(df, core_model, label_size, optimizer):
 
 
 def eval_model(df, labels, model):
-    cnn_test_result = model.evaluate(df[2][0],  df[2][1], return_dict=True)
+
     predicted_labels = np.argmax(model.predict(df[2][0]), axis=1)
     true_labels = np.argmax(df[2][1], axis=1)
+    metric = tf.keras.metrics.F1Score(average="weighted")
+    metric.update_state(true_labels, predicted_labels)
+    cnn_test_result = metric.result()
     confusion_mat = tf.math.confusion_matrix(true_labels, predicted_labels)
     cm = confusion_mat.numpy()
     cmn = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
@@ -68,7 +71,7 @@ def downstream_testing(df, model, label_size, optimizer):
     return history, har_model
 
 
-def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_users=None, testing_users=None, core_model='CNN_LSTM', step=1):
+def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_users=None, testing_users=None, core_model='CNN_LSTM', step=1, shift=100):
     df = dataset_pre_processing.concat_datasets([df], sensor_type=sensor_type)
     outputshape = len(set(df[list(df.keys())[0]][0][1]))
     users = list(df.keys())
@@ -76,12 +79,14 @@ def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_use
     if training_users == None:
         user_train_size = int(len(users)*.8)
         training_users = users[0:(user_train_size)]
+        print(training_users)
     else:
         user_train_size = len(training_users)
 
     if testing_users == None:
         user_test_size = len(users) - user_train_size
         testing_users = users[user_train_size:(user_train_size + user_test_size)]
+        print(testing_users)
     else:
         user_test_size = len(testing_users)
     labels = dataset_pre_processing.get_labels(df)
@@ -93,7 +98,7 @@ def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_use
         train_users=training_users,
         test_users=testing_users,
         window_size=400, 
-        shift=10, 
+        shift=shift, 
         verbose=1
     )
     if core_model == 'CNN_LSTM':
@@ -127,7 +132,8 @@ def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_use
         train_users=users[0:i],
         test_users=testing_users,
         window_size=400,
-        shift=10
+        shift=shift,
+        verbose=1
         )
         ds_history, har_model = downstream_testing(har_preprocessed, composite_model, outputshape2, 
                                                tf.keras.optimizers.Adam(learning_rate=0.0005))

@@ -1579,11 +1579,13 @@ def process_WISDM_v1_HAR(data_folder_path):
     This is the WISDM that SelfHAR uses
     """
     columns = ['user-id','activity','timestamp', 'x-axis', 'y-axis', 'z-axis']
-    
+    print("here")
     df = pd.read_csv(os.path.join(data_folder_path, 'WISDM_ar_v1.1_raw.txt'), header = None, names = columns, on_bad_lines='skip')
     df['z-axis'] = df['z-axis'].map(lambda x: str(re.findall("\d+\.\d+", str(x))))
     df['z-axis'] = df['z-axis'].map(lambda x: x[2:-2])
     df['z-axis'] = pd.to_numeric(df['z-axis'],errors='coerce')
+    df=df.dropna()
+
     all_users = df['user-id'].unique()
     acc_dataset = {}
     for user in all_users:

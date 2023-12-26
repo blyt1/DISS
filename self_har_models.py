@@ -394,31 +394,43 @@ def create_LSTM_CNN_Model(input_shape, model_name="LSTM_CNN"):
     """
     inputs = tf.keras.Input(shape=input_shape, name='input')
     x = inputs
-    x = tf.keras.layers.LSTM(300, return_sequences=True)(x)
-    x = tf.keras.layers.LSTM(300, return_sequences=True)(x)
+    x = tf.keras.layers.Dense(300, activation='relu')(x)
     x = tf.keras.layers.Conv1D(
-            32, 24,
+            64, 3,
             activation='relu',
+            strides = 1,
             kernel_regularizer=tf.keras.regularizers.l2(l=1e-4)
         )(x)
-    x = tf.keras.layers.Dropout(0.1)(x)
-
     x = tf.keras.layers.Conv1D(
-            64, 16,
+            128, 3,
             activation='relu',
-            kernel_regularizer=tf.keras.regularizers.l2(l=1e-4)
+            strides = 1,
+            kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
         )(x)
-    x = tf.keras.layers.Dropout(0.1)(x)
+    x = tf.keras.layers.MaxPool1D(pool_size=4, padding='valid', data_format='channels_last', strides=2)(x)
 
     x = tf.keras.layers.Conv1D(
-        96, 8,
+        32, 5,
         activation='relu',
+        strides = 2,
         kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
         )(x)
-    x = tf.keras.layers.Dropout(0.1)(x)
-    outputs = tf.keras.layers.GlobalMaxPool1D(data_format='channels_last', name='global_max_pooling1d')(x) 
+    x = tf.keras.layers.Conv1D(
+        32, 5,
+        activation='relu',
+        strides = 2,
+        kernel_regularizer=tf.keras.regularizers.l2(l=1e-4),
+        )(x)
+    x = tf.keras.layers.MaxPool1D(pool_size=4, padding='valid', data_format='channels_last', strides=2)(x)
 
-    return tf.keras.Model(inputs, outputs, name= model_name)
+    # x = tf.keras.layers.Dropout(0.5)(x)
+    x = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(64, return_sequences=True))(x)
+    x = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(32))(x)
+    # x = tf.keras.layers.Dropout(0.4)(x)
+    # x = tf.keras.layers.Dense(96, activation='relu')(x)
+    outputs = tf.keras.layers.Dense(128)(x)
+
+    return tf.keras.Model(inputs, outputs, name=model_name)
 
 
 def create_transformer_model(input_shape, model_name="Transformer"):
