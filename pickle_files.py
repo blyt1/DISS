@@ -36,7 +36,7 @@ if __name__ == '__main__':
     harth_har_df = process_HARTH_all_har_data("test_run/original_datasets/harth")
     dasa_har_df = process_dasa_all_har_data("test_run/original_datasets/data")
     wisdm_har_df = process_WISDM_all_har_data("test_run/original_datasets/wisdm-dataset/raw")
-    wisdm1_har_df = raw_data_processing.process_WISDM_v1_HAR("'test_run/original_datasets/WISDM_ar_v1.1 2/")
+    wisdm1_har_df = raw_data_processing.process_WISDM_v1_HAR("test_run/original_datasets/WISDM_ar_v1.1")
 
     with open('pickled_datasets/pamap_har.pickle', 'wb') as file:
         pickle.dump(pamap_har_df, file)
