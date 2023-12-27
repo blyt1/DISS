@@ -7,6 +7,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+from sklearn.metrics import f1_score
 tf.get_logger().setLevel('INFO')
 
 def prepare_self_supervised_learning_dataset(sensor_type, train_users, test_users):
@@ -31,7 +32,6 @@ def prepare_self_supervised_learning_dataset(sensor_type, train_users, test_user
     )
     return user_dataset_preprocessed, labels
 
-
 def train_self_supervised_model(df, core_model, label_size, optimizer):
     callback = tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)
 
@@ -44,12 +44,11 @@ def train_self_supervised_model(df, core_model, label_size, optimizer):
 
 
 def eval_model(df, labels, model):
-
+    cnn_test_result = model.evaluate(df[2][0],  df[2][1], return_dict=True)
     predicted_labels = np.argmax(model.predict(df[2][0]), axis=1)
     true_labels = np.argmax(df[2][1], axis=1)
-    metric = tf.keras.metrics.F1Score(average="weighted")
-    metric.update_state(true_labels, predicted_labels)
-    cnn_test_result = metric.result()
+    f1 = f1_score(true_labels, predicted_labels, average='weighted')
+    print(f1)
     confusion_mat = tf.math.confusion_matrix(true_labels, predicted_labels)
     cm = confusion_mat.numpy()
     cmn = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
@@ -58,12 +57,13 @@ def eval_model(df, labels, model):
     plt.xlabel('Predicted')
     plt.plot()
     plt.show()
-    return cnn_test_result
+    return f1
 
 def downstream_testing(df, model, label_size, optimizer):
     callback = tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)
     core_model = self_har_models.extract_core_model(model)
-    har_model = self_har_models.attach_full_har_classification_head(core_model=core_model, 
+    cm = tf.keras.models.clone_model(core_model)
+    har_model = self_har_models.attach_full_har_classification_head(core_model=cm, 
                                                                           output_shape=label_size, 
                                                                           optimizer=optimizer)
     history = har_model.fit(df[0][0], df[0][1]
@@ -121,7 +121,7 @@ def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_use
     har_df = dataset_pre_processing.concat_datasets([har_df], sensor_type=har_sensor_type)
     outputshape2 = len(set(har_df[list(har_df.keys())[0]][0][1]))
     har_labels = dataset_pre_processing.get_labels(har_df)
-
+    outputshape2 = len(har_labels)
     har_label_map = {label: index for index, label in enumerate(har_labels)}
     all_info = []
     for i in range(3, user_train_size, step):
