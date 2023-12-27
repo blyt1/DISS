@@ -203,7 +203,7 @@ for i in range(3, user_train_size, 2):
     train_users=har_users[0:i],
     test_users=testing_users,
     window_size=400,
-    shift=100
+    shift=10
     )
     ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 6,
                                             tf.keras.optimizers.Adam(learning_rate=0.0005))
