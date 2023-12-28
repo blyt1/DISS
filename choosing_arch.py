@@ -48,7 +48,7 @@ def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_use
         cm = self_har_models.create_LSTM_Model((400,3))
     elif core_model == 'Transformer':
         cm = self_har_models.create_transformer_model((400,3))
-    elif core_model == 'CNN'
+    elif core_model == 'CNN':
         cm = self_har_models.create_1d_conv_core_model((400,3))
     else:
         print('cannot find model, training CNN-LSTM model isntead')
@@ -86,14 +86,14 @@ with open('pickled_datasets/hhar2.pickle', 'rb') as file:
 with open('pickled_datasets/hhar_har.pickle', 'rb') as file:
     hhar_har_df = pickle.load(file)
     
+Copy
+column_names = ['LSTM', 'LSTM_CNN', 'CNN', 'CNN_LSTM']  # List of column names, None corresponds to the fourth function call
+
 results = []
 
 for _ in range(3):
-    one = eval_downstream_model(hhar_df, hhar_har_df, 'acc', 'acc', core_model="LSTM")
-    two = eval_downstream_model(hhar_df, hhar_har_df, 'acc', 'acc', core_model="LSTM-CNN")
-    three = eval_downstream_model(hhar_df, hhar_har_df, 'acc', 'acc', core_model="CNN")
-    four = eval_downstream_model(hhar_df, hhar_har_df, 'acc', 'acc')
-    
-    results.extend([one, two, three, four])
+    for core_model in column_names:
+        result = eval_downstream_model(hhar_df, hhar_har_df, 'acc', 'acc', core_model=core_model)
+        results.append((core_model, result))
 
 print(results)
