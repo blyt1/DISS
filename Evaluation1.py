@@ -217,7 +217,43 @@ def eval_multi_model(df_list, har_df_list, output_shape, har_output_shape, senso
     print("\n")
     return (all_info)
 
+def eval_fully_supervised(df)
+    df = dataset_pre_processing.concat_datasets([df], sensor_type=sensor_type)
+    outputshape = len(set(df[list(df.keys())[0]][0][1]))
+    users = list(df.keys())
+    
+    if training_users == None:
+        user_train_size = int(len(users)*.8)
+        training_users = users[0:(user_train_size)]
+        print(training_users)
+    else:
+        user_train_size = len(training_users)
 
+    if testing_users == None:
+        user_test_size = len(users) - user_train_size
+        testing_users = users[user_train_size:(user_train_size + user_test_size)]
+        print(testing_users)
+    else:
+        user_test_size = len(testing_users)
+    labels = dataset_pre_processing.get_labels(df)
+    label_map = {label: index for index, label in enumerate(labels)}
+    user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
+        user_datasets=df, 
+        label_map=label_map, 
+        output_shape=outputshape,
+        train_users=training_users,
+        test_users=testing_users,
+        window_size=400, 
+        shift=100, 
+        verbose=1
+    )
+    cm = self_har_models.create_CNN_LSTM_Model((400,3))
+
+    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, cm, outputshape, tf.keras.optimizers.Adam(learning_rate=0.0005))
+
+    return eval_model(user_dataset_preprocessed, labels, composite_model)
+    
+    
 def eval_harth():
     with open('pickled_datasets/pamap2.pickle', 'rb') as file:
         pamap_df = pickle.load(file)
