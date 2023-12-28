@@ -217,25 +217,20 @@ def eval_multi_model(df_list, har_df_list, output_shape, har_output_shape, senso
     print("\n")
     return (all_info)
 
-def eval_fully_supervised(df)
-    df = dataset_pre_processing.concat_datasets([df], sensor_type=sensor_type)
-    outputshape = len(set(df[list(df.keys())[0]][0][1]))
+def eval_fully_supervised(df):
+    df = dataset_pre_processing.concat_datasets([df], sensor_type="acc")
     users = list(df.keys())
     
-    if training_users == None:
-        user_train_size = int(len(users)*.8)
-        training_users = users[0:(user_train_size)]
-        print(training_users)
-    else:
-        user_train_size = len(training_users)
+    user_train_size = int(len(users)*.8)
+    training_users = users[0:(user_train_size)]
+    print(training_users)
 
-    if testing_users == None:
-        user_test_size = len(users) - user_train_size
-        testing_users = users[user_train_size:(user_train_size + user_test_size)]
-        print(testing_users)
-    else:
-        user_test_size = len(testing_users)
+    user_test_size = len(users) - user_train_size
+    testing_users = users[user_train_size:(user_train_size + user_test_size)]
+    print(testing_users)
+
     labels = dataset_pre_processing.get_labels(df)
+    outputshape = len(labels)
     label_map = {label: index for index, label in enumerate(labels)}
     user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
         user_datasets=df, 
