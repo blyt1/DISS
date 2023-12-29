@@ -52,7 +52,8 @@ user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite
     train_users=users,
     test_users=[],
     window_size=400, 
-    shift=100
+    shift=100,
+    verbose=1
 )
 
 cm = self_har_models.create_CNN_LSTM_Model((400,3))
@@ -82,13 +83,13 @@ for i in range(3, user_train_size, 1):
     har_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
     user_datasets=har_df,
     label_map=har_label_map,
-    output_shape=6,
+    output_shape=24,
     train_users=har_users[0:i],
     test_users=testing_users,
     window_size=400,
     shift=100
     )
-    ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 6, 
+    ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 24, 
                                             tf.keras.optimizers.Adam(learning_rate=0.0005))
     downstream_eval = eval_model(har_preprocessed, labels, har_model)
     print("Trained " + str(i) + " users")
@@ -109,7 +110,8 @@ user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite
     train_users=users,
     test_users=[],
     window_size=400, 
-    shift=100
+    shift=100,
+    verbose=1
 )
 
 cm = self_har_models.create_CNN_LSTM_Model((400,3))
@@ -139,13 +141,13 @@ for i in range(3, user_train_size, 1):
     har_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
     user_datasets=har_df,
     label_map=har_label_map,
-    output_shape=6,
+    output_shape=12,
     train_users=har_users[0:i],
     test_users=testing_users,
     window_size=400,
     shift=100
     )
-    ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 6, 
+    ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 12, 
                                             tf.keras.optimizers.Adam(learning_rate=0.0005))
     downstream_eval = eval_model(har_preprocessed, labels, har_model)
     print("Trained " + str(i) + " users")
@@ -166,7 +168,8 @@ user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite
     train_users=users,
     test_users=[],
     window_size=400, 
-    shift=100
+    shift=100,
+    verbose=1
 )
 
 cm = self_har_models.create_CNN_LSTM_Model((400,3))
@@ -196,13 +199,13 @@ for i in range(3, user_train_size, 1):
     har_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
     user_datasets=har_df,
     label_map=har_label_map,
-    output_shape=6,
+    output_shape=19,
     train_users=har_users[0:i],
     test_users=testing_users,
     window_size=400,
     shift=10
     )
-    ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 6, 
+    ds_history, har_model = downstream_testing(har_preprocessed, composite_model, 19, 
                                             tf.keras.optimizers.Adam(learning_rate=0.0005))
     downstream_eval = eval_model(har_preprocessed, labels, har_model)
     print("Trained " + str(i) + " users")
@@ -223,7 +226,8 @@ user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite
     train_users=users,
     test_users=[],
     window_size=400, 
-    shift=100
+    shift=100,
+    verbose=1
 )
 
 cm = self_har_models.create_CNN_LSTM_Model((400,3))
@@ -282,7 +286,8 @@ user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite
     train_users=users,
     test_users=[],
     window_size=400,
-    shift=100
+    shift=100,
+    verbose=1
 )
 
 cm = self_har_models.create_CNN_LSTM_Model((400,3))
@@ -340,7 +345,8 @@ user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite
     train_users=users,
     test_users=[],
     window_size=400,
-    shift=100
+    shift=100,
+    verbose=1
 )
 
 cm = self_har_models.create_CNN_LSTM_Model((400,3))
