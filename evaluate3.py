@@ -106,7 +106,7 @@ label_map = {label: index for index, label in enumerate(labels)}
 user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
     user_datasets=df, 
     label_map=label_map, 
-    output_shape=21,
+    output_shape=22,
     train_users=users,
     test_users=[],
     window_size=400, 
@@ -118,7 +118,7 @@ cm = self_har_models.create_CNN_LSTM_Model((400,3))
 callback = tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)
 df = user_dataset_preprocessed
 composite_model = self_har_models.attach_full_har_classification_head(core_model=cm, 
-                                                                        output_shape=21, 
+                                                                        output_shape=22, 
                                                                         optimizer=tf.keras.optimizers.legacy.Adam(learning_rate=0.0005))
 history = composite_model.fit(df[0][0], df[0][1]
                 , epochs=100, validation_data=(df[1][0], df[1][1]), callbacks=[callback])
