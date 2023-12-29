@@ -50,7 +50,7 @@ datasets = [
 results = []
 
 for dataset_name, dataset, har_dataset, target_columns, label_column, additional_params in datasets:
-    result = Evaluation1.eval_downstream_model(dataset, har_dataset, target_columns, label_column, **additional_params)
+    result = Evaluation1.eval_downstream_model(dataset, har_dataset, target_columns, label_column, core_model="CNN", **additional_params)
     results.append((dataset_name, result))
 
 # Print results

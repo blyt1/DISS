@@ -71,7 +71,7 @@ def downstream_testing(df, model, label_size, optimizer):
     return history, har_model
 
 
-def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_users=None, testing_users=None, core_model='CNN_LSTM', step=1, shift=100):
+def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_users=None, testing_users=None, core_model='CNN', step=1, shift=100):
     df = dataset_pre_processing.concat_datasets([df], sensor_type=sensor_type)
     outputshape = len(set(df[list(df.keys())[0]][0][1]))
     users = list(df.keys())
@@ -109,6 +109,8 @@ def eval_downstream_model(df, har_df, sensor_type, har_sensor_type, training_use
         cm = self_har_models.create_LSTM_Model((400,3))
     elif core_model == 'Transformer':
         cm = self_har_models.create_transformer_model((400,3))
+    elif core_model == 'CNN':
+        cm = self_har_models.create_1d_conv_core_model((400,3))
     else:
         print('cannot find model, training CNN-LSTM model isntead')
         cm = self_har_models.create_CNN_LSTM_Model((400,3))
