@@ -86,14 +86,14 @@ with open('pickled_datasets/hhar2.pickle', 'rb') as file:
 with open('pickled_datasets/hhar_har.pickle', 'rb') as file:
     hhar_har_df = pickle.load(file)
     
-Copy
+
 column_names = ['LSTM', 'LSTM_CNN', 'CNN', 'CNN_LSTM']  # List of column names, None corresponds to the fourth function call
 
 results = []
 
 for _ in range(3):
     for core_model in column_names:
-        result = eval_downstream_model(hhar_df, hhar_har_df, 'acc', 'acc', core_model=core_model)
+        result = eval_downstream_model(hhar_df, hhar_har_df, 'acc', 'acc', core_model="Transformer")
         results.append((core_model, result))
 
-print(results)
+print(result)
