@@ -39,11 +39,11 @@ print("evaluated motionsense_har_df")
 Evaluation1.eval_fully_supervised(harth_har_df)
 print("evaluated harth_har_df")
 
-Evaluation1.eval_fully_supervised(dasa_har_df)
+Evaluation1.eval_fully_supervised(dasa_har_df, 10)
 print("evaluated dasa_har_df")
 
 Evaluation1.eval_fully_supervised(wisdm_har_df)
 print("evaluated wisdm_har_df")
 
-Evaluation1.eval_fully_supervised(wisdm1_har_df)
+Evaluation1.eval_fully_supervised(wisdm1_har_df, step=2)
 print("evaluated wisdm1_har_df")

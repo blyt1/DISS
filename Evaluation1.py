@@ -44,7 +44,7 @@ def train_self_supervised_model(df, core_model, label_size, optimizer):
 
 
 def eval_model(df, labels, model):
-    cnn_test_result = model.evaluate(df[2][0],  df[2][1], return_dict=True)
+    # cnn_test_result = model.evaluate(df[2][0],  df[2][1], return_dict=True)
     predicted_labels = np.argmax(model.predict(df[2][0]), axis=1)
     true_labels = np.argmax(df[2][1], axis=1)
     f1 = f1_score(true_labels, predicted_labels, average='weighted')
@@ -219,7 +219,7 @@ def eval_multi_model(df_list, har_df_list, output_shape, har_output_shape, senso
     print("\n")
     return (all_info)
 
-def eval_fully_supervised(df):
+def eval_fully_supervised(df, shift=100, step=1):
     df = dataset_pre_processing.concat_datasets([df], sensor_type="acc")
     users = list(df.keys())
     
@@ -234,21 +234,25 @@ def eval_fully_supervised(df):
     labels = dataset_pre_processing.get_labels(df)
     outputshape = len(labels)
     label_map = {label: index for index, label in enumerate(labels)}
-    user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
-        user_datasets=df, 
-        label_map=label_map, 
-        output_shape=outputshape,
-        train_users=training_users,
-        test_users=testing_users,
-        window_size=400, 
-        shift=100, 
-        verbose=1
-    )
-    cm = self_har_models.create_CNN_LSTM_Model((400,3))
+    all_info = []
+    for i in range(3, user_train_size, step):
+        user_dataset_preprocessed = dataset_pre_processing.pre_process_dataset_composite(
+            user_datasets=df, 
+            label_map=label_map, 
+            output_shape=outputshape,
+            train_users=training_users,
+            test_users=testing_users,
+            window_size=400, 
+            shift=shift, 
+            verbose=1
+        )
+        cm = self_har_models.create_CNN_LSTM_Model((400,3))
 
-    history, composite_model = train_self_supervised_model(user_dataset_preprocessed, cm, outputshape, tf.keras.optimizers.Adam(learning_rate=0.0005))
-
-    return eval_model(user_dataset_preprocessed, labels, composite_model)
+        history, composite_model = train_self_supervised_model(user_dataset_preprocessed, cm, outputshape, tf.keras.optimizers.Adam(learning_rate=0.0005))
+        eval = eval_model(user_dataset_preprocessed, labels, composite_model)
+        info = "Trained " + str(i) + " users " + str(eval) 
+        all_info.append(info)
+    return all_info
     
     
 def eval_harth():
