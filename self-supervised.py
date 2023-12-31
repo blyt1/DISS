@@ -27,23 +27,23 @@ with open('pickled_datasets/wisdm_har.pickle', 'rb') as file:
 with open('pickled_datasets/wisdm1_har.pickle', 'rb') as file:
     wisdm1_har_df = pickle.load(file)
 
-print(Evaluation1.eval_fully_supervised(pamap_har_df))
-print("evaluated pamap")
+# print(Evaluation1.eval_fully_supervised(pamap_har_df))
+# print("evaluated pamap")
 
-print(Evaluation1.eval_fully_supervised(hhar_har_df))
-print("evaluated hhar_har_df")
+# print(Evaluation1.eval_fully_supervised(hhar_har_df))
+# print("evaluated hhar_har_df")
 
-print(Evaluation1.eval_fully_supervised(motionsense_har_df))
-print("evaluated motionsense_har_df")
+# print(Evaluation1.eval_fully_supervised(motionsense_har_df))
+# print("evaluated motionsense_har_df")
 
-print(Evaluation1.eval_fully_supervised(harth_har_df))
-print("evaluated harth_har_df")
+# print(Evaluation1.eval_fully_supervised(harth_har_df))
+# print("evaluated harth_har_df")
 
-print(Evaluation1.eval_fully_supervised(dasa_har_df, 10))
-print("evaluated dasa_har_df")
+# print(Evaluation1.eval_fully_supervised(dasa_har_df, 10))
+# print("evaluated dasa_har_df")
 
-print(Evaluation1.eval_fully_supervised(wisdm_har_df))
-print("evaluated wisdm_har_df")
+# print(Evaluation1.eval_fully_supervised(wisdm_har_df))
+# print("evaluated wisdm_har_df")
 
 print(Evaluation1.eval_fully_supervised(wisdm1_har_df, step=2))
 print("evaluated wisdm1_har_df")
