@@ -240,7 +240,7 @@ def eval_fully_supervised(df, shift=100, step=1):
             user_datasets=df, 
             label_map=label_map, 
             output_shape=outputshape,
-            train_users=training_users,
+            train_users=users[0:i],
             test_users=testing_users,
             window_size=400, 
             shift=shift, 
