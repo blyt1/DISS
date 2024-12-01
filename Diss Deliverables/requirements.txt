@@ -1,0 +1,7 @@
+tensorflow=2.12
+seaborn
+matplotlib
+numpy
+pandas
+wandb
+jupyterlab
