@@ -8,4 +8,4 @@ I included all the failed code and commits so that you can glimpse the chaos. Wh
 To get a picture of the final results, the folder "DISS Deliverables" contains scripts that were used to produce the data found in my dissertation.
 
 ## Acknowledgments
-The preprocessing and model architecture were initially based on the repository SelfHAR.
+The preprocessing and model architecture were initially based on the repository [SelfHAR](https://github.com/iantangc/SelfHAR)
